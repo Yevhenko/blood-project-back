@@ -1,0 +1,13 @@
+version: '2'
+services:
+  dbmain:
+    container_name: db-blood
+    image: postgres:9.6.2-alpine
+    environment:
+      POSTGRES_USER: main
+      POSTGRES_DB: main
+      POSTGRES_PASSWORD: blood
+    ports:
+      - 54321:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
