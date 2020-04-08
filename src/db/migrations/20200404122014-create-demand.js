@@ -2,27 +2,21 @@
 /* eslint-disable implicit-arrow-linebreak */
 module.exports = {
   up: (queryInterface, Sequelize) =>
-    queryInterface.createTable('Users', {
+    queryInterface.createTable('Demands', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      fullname: {
+      fullName: {
         type: Sequelize.STRING,
-      },
-      dateOfBirth: {
-        type: Sequelize.DATEONLY,
       },
       sex: {
         type: Sequelize.STRING(1),
       },
       phoneNumber: {
         type: Sequelize.STRING(10),
-      },
-      email: {
-        type: Sequelize.STRING,
       },
       bloodType: {
         type: Sequelize.STRING(1),
@@ -33,15 +27,11 @@ module.exports = {
       locality: {
         type: Sequelize.STRING,
       },
-      lastBeingDonor: {
-        type: Sequelize.DATE,
-      },
-      photo: {
+      reason: {
         type: Sequelize.STRING,
       },
-      demandId: {
-        type: Sequelize.BIGINT,
-        allowNull: true,
+      userId: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
@@ -52,5 +42,5 @@ module.exports = {
         type: Sequelize.DATE,
       },
     }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Users'),
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Demands'),
 };

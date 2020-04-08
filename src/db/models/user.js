@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'User',
     {
-      fullname: DataTypes.STRING,
+      fullName: DataTypes.STRING,
       dateOfBirth: DataTypes.DATEONLY,
       sex: DataTypes.STRING(1),
       phoneNumber: DataTypes.STRING(10),
@@ -12,13 +12,14 @@ module.exports = (sequelize, DataTypes) => {
       locality: DataTypes.STRING,
       lastBeingDonor: DataTypes.DATE,
       photo: DataTypes.STRING,
-      demandId: DataTypes.BIGINT,
+      connectionId: DataTypes.INTEGER,
     },
     {},
   );
   User.associate = (models) => {
     // associations can be defined here
-    User.belongsTo(models.Demand, { foreignKey: 'demandId', targetKey: 'id' });
+    User.hasMany(models.Demand, { foreignKey: 'userId', sourceKey: 'id' });
+    User.belongsTo(models.Connection, { foreignKey: 'connectionId', targetKey: 'id' });
   };
   return User;
 };
