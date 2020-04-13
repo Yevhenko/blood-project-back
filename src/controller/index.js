@@ -2,7 +2,7 @@ const { Connection, User, Demand } = require('../db/models');
 
 async function setUser(body) {
   try {
-    await User.create({
+    const user = await User.create({
       fullName: body.fullName,
       dateOfBirth: body.dateOfBirth,
       sex: body.sex,
@@ -13,10 +13,12 @@ async function setUser(body) {
       locality: body.locality,
       lastBeingDonor: body.lastBeingDonor,
       photo: body.photo,
-      connectionId: Connection.id,
     });
+
+    return user;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -50,9 +52,42 @@ async function setConnection(body) {
 
 async function getUser() {
   try {
-    return await User.findAll();
+    const users = await User.findAll();
+
+    return users.map((u) => ({
+      email: u.email,
+      name: u.fullName,
+      phone: u.phoneNumber,
+    }));
   } catch (error) {
-    return error;
+    throw new Error(error);
+  }
+}
+
+async function updateUser(body) {
+  try {
+    await User.update(
+      {
+        fullName: body.fullName,
+        dateOfBirth: body.dateOfBirth,
+        sex: body.sex,
+        phoneNumber: body.phoneNumber,
+        email: body.email,
+        bloodType: body.bloodType,
+        rhesus: body.rhesus,
+        locality: body.locality,
+        lastBeingDonor: body.lastBeingDonor,
+        photo: body.photo,
+      },
+      {
+        where: {
+          id: body.id,
+        },
+      },
+    );
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 }
 
@@ -61,4 +96,5 @@ module.exports = {
   setConnection,
   setDemand,
   getUser,
+  updateUser,
 };

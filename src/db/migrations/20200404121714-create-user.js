@@ -41,6 +41,7 @@ module.exports = {
       },
       connectionId: {
         type: Sequelize.INTEGER,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,

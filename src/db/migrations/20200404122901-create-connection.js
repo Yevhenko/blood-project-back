@@ -11,6 +11,12 @@ module.exports = {
       },
       demandId: {
         type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        allowNull: true,
+        references: {
+          model: 'Demands',
+          key: 'id',
+        },
       },
       createdAt: {
         allowNull: false,
