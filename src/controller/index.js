@@ -55,10 +55,24 @@ async function getUser() {
     const users = await User.findAll();
 
     return users.map((u) => ({
-      email: u.email,
       name: u.fullName,
+      email: u.email,
       phone: u.phoneNumber,
     }));
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+async function getOneUser(query) {
+  try {
+    const user = await User.findAll({
+      where: {
+        id: query.id,
+      },
+    });
+
+    return user;
   } catch (error) {
     throw new Error(error);
   }
@@ -91,10 +105,25 @@ async function updateUser(body) {
   }
 }
 
+async function deleteUser(body) {
+  try {
+    await User.destroy({
+      where: {
+        id: body.id,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 module.exports = {
   setUser,
   setConnection,
   setDemand,
   getUser,
   updateUser,
+  getOneUser,
+  deleteUser,
 };
