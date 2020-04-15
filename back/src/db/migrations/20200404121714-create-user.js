@@ -39,6 +39,9 @@ module.exports = {
       photo: {
         type: Sequelize.STRING,
       },
+      telegramId: {
+        type: Sequelize.BIGINT,
+      },
       connectionId: {
         type: Sequelize.INTEGER,
         allowNull: true,

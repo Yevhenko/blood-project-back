@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       locality: DataTypes.STRING,
       lastBeingDonor: DataTypes.DATE,
       photo: DataTypes.STRING,
+      telegramId: DataTypes.BIGINT,
       connectionId: DataTypes.INTEGER,
     },
     {},

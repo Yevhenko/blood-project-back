@@ -2,12 +2,13 @@ version: '2'
 services:
   nodejs:
     image: node:12-alpine
-    build: .
+    build:
+      context: back/src/
     container_name: back-blood
     depends_on:
       - dbmain
     env_file:
-      - .env
+      - back/src/.env
     ports:
       - 3000:3000
     command:  sh -c "node index"
