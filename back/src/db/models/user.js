@@ -13,14 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       lastBeingDonor: DataTypes.DATE,
       photo: DataTypes.STRING,
       telegramId: DataTypes.BIGINT,
-      connectionId: DataTypes.INTEGER,
     },
     {},
   );
   User.associate = (models) => {
     // associations can be defined here
     User.hasMany(models.Demand, { foreignKey: 'userId', sourceKey: 'id' });
-    User.belongsTo(models.Connection, { foreignKey: 'connectionId', targetKey: 'id' });
+    User.hasMany(models.Connection, { foreignKey: 'userId', sourceKey: 'id' });
+
   };
   return User;
 };
