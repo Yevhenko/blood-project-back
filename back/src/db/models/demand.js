@@ -3,10 +3,9 @@ module.exports = (sequelize, DataTypes) => {
     'Demand',
     {
       fullName: DataTypes.STRING,
-      sex: DataTypes.STRING(1),
       phoneNumber: DataTypes.STRING(10),
       bloodType: DataTypes.STRING(1),
-      rhesus: DataTypes.STRING(1),
+      rhesus: DataTypes.BOOLEAN,
       locality: DataTypes.STRING,
       reason: DataTypes.STRING,
       userId: DataTypes.INTEGER,

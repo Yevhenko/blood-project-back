@@ -12,9 +12,6 @@ module.exports = {
       fullName: {
         type: Sequelize.STRING,
       },
-      sex: {
-        type: Sequelize.STRING(1),
-      },
       phoneNumber: {
         type: Sequelize.STRING(10),
       },
@@ -22,7 +19,7 @@ module.exports = {
         type: Sequelize.STRING(1),
       },
       rhesus: {
-        type: Sequelize.STRING(1),
+        type: Sequelize.BOOLEAN,
       },
       locality: {
         type: Sequelize.STRING,

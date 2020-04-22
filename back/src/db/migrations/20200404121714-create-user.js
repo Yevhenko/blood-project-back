@@ -15,9 +15,6 @@ module.exports = {
       dateOfBirth: {
         type: Sequelize.DATEONLY,
       },
-      sex: {
-        type: Sequelize.STRING(1),
-      },
       phoneNumber: {
         type: Sequelize.STRING(10),
       },
@@ -28,16 +25,13 @@ module.exports = {
         type: Sequelize.STRING(1),
       },
       rhesus: {
-        type: Sequelize.STRING(1),
+        type: Sequelize.BOOLEAN,
       },
       locality: {
         type: Sequelize.STRING,
       },
       lastBeingDonor: {
-        type: Sequelize.DATE,
-      },
-      photo: {
-        type: Sequelize.STRING,
+        type: Sequelize.DATEONLY,
       },
       telegramId: {
         type: Sequelize.BIGINT,
