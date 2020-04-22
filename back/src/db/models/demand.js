@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   Demand.associate = (models) => {
     // associations can be defined here
     Demand.belongsTo(models.User, { foreignKey: 'userId', targetKey: 'id' });
-    Demand.hasMany(models.Connection, { foreignKey: 'demandId', sourceKey: 'id' });
+    Demand.belongsToMany(models.User, { through: 'Connection' });
   };
   return Demand;
 };
