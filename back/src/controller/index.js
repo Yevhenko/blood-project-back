@@ -22,34 +22,6 @@ async function setUser(body) {
   }
 }
 
-async function setDemand(body) {
-  try {
-    await Demand.create({
-      fullName: body.fullName,
-      sex: body.sex,
-      phoneNumber: body.phoneNumber,
-      bloodType: body.bloodType,
-      rhesus: body.rhesus,
-      locality: body.locality,
-      reason: body.reason,
-      userId: User.id,
-    });
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// eslint-disable-next-line no-unused-vars
-async function setConnection(body) {
-  try {
-    await Connection.create({
-      demandId: Demand.id,
-    });
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 async function getUser() {
   try {
     const users = await User.findAll();
@@ -78,9 +50,9 @@ async function getOneUser(query) {
   }
 }
 
-async function updateUser(body) {
+async function updateUser(body, query) {
   try {
-    await User.update(
+    const updatedUser = await User.update(
       {
         fullName: body.fullName,
         dateOfBirth: body.dateOfBirth,
@@ -95,21 +67,23 @@ async function updateUser(body) {
       },
       {
         where: {
-          id: body.id,
+          id: query.id,
         },
       },
     );
+
+    return updatedUser;
   } catch (error) {
     console.error(error);
     throw error;
   }
 }
 
-async function deleteUser(body) {
+async function deleteUser(query) {
   try {
     await User.destroy({
       where: {
-        id: body.id,
+        id: query.id,
       },
     });
   } catch (error) {
@@ -118,12 +92,102 @@ async function deleteUser(body) {
   }
 }
 
+async function setDemand(body) {
+  try {
+    const demand = await Demand.create({
+      fullName: body.fullName,
+      sex: body.sex,
+      phoneNumber: body.phoneNumber,
+      bloodType: body.bloodType,
+      rhesus: body.rhesus,
+      locality: body.locality,
+      reason: body.reason,
+      userId: body.userId,
+    });
+
+    return demand;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+async function updateDemand(body, query) {
+  try {
+    const updatedDemand = await Demand.update({
+      fullName: body.fullName,
+      sex: body.sex,
+      phoneNumber: body.phoneNumber,
+      bloodType: body.bloodType,
+      rhesus: body.rhesus,
+      locality: body.locality,
+      reason: body.reason,
+      userId: body.userId,
+    },
+      {
+        where: {
+          id: query.id,
+        },
+      },
+    );
+
+    return updatedDemand;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+async function deleteDemand(query) {
+  try {
+    await Demand.destroy({
+      where: {
+        id: query.id,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+// eslint-disable-next-line no-unused-vars
+async function setConnection(body) {
+  try {
+    const connection = await Connection.create({
+      demandId: body.demandId,
+      userId: body.userId,
+    });
+
+    return connection;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function deleteConnection(query) {
+  try {
+    await Connection.destroy({
+      where: {
+        id: query.id,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+
 module.exports = {
   setUser,
-  setConnection,
-  setDemand,
   getUser,
   updateUser,
   getOneUser,
   deleteUser,
+  setConnection,
+  deleteConnection,
+  setDemand,
+  updateDemand,
+  deleteDemand,
 };

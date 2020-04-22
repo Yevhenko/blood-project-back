@@ -18,15 +18,15 @@ user.post('/user', async (req, res) => {
     return res.send(response);
   } catch (error) {
     console.error(error);
-    return res.status(500).send('Something went wrong');
+    return res.status(500).send('The user cannot be set');
   }
 });
 
 user.get('/user', async (req, res) => {
   try {
-    const { query } = req;
-    console.log(query);
-    if (!query) {
+    const userId = parseInt(req.query.id, 10);
+
+    if (!userId) {
       const userList = await getUser();
       res.send(userList);
     } else {
@@ -35,41 +35,41 @@ user.get('/user', async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send('Something went wrong');
+    res.status(500).send('The user cannot be got');
   }
 });
 
 user.put('/user', async (req, res) => {
   try {
-    const { body } = req;
+    const userId = parseInt(req.query.id, 10);
 
-    if (!body) {
+    if (!userId) {
       return res.status(404).send('Not found');
     }
 
-    await updateUser(body);
+    await updateUser(body, query);
 
     return res.end('User updated!');
   } catch (error) {
     console.error(error);
-    return res.status(500).send('Something went wrong');
+    return res.status(500).send('The user cannot be updated');
   }
 });
 
 user.delete('/user', async (req, res) => {
   try {
-    const { body } = req;
+    const userId = parseInt(req.query.id, 10);
 
-    if (!body) {
+    if (!userId) {
       return res.status(404).send('Not found');
     }
 
-    await deleteUser(body);
+    await deleteUser(query);
 
     return res.end('User deleted!');
   } catch (error) {
     console.error(error);
-    return res.status(500).send('Something went wrong');
+    return res.status(500).send('The user cannot be deleted at the moment');
   }
 });
 
