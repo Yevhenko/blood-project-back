@@ -13,7 +13,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       phoneNumber: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING,
       },
       bloodType: {
         type: Sequelize.STRING(1),

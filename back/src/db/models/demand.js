@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     'Demand',
     {
       fullName: DataTypes.STRING,
-      phoneNumber: DataTypes.STRING(10),
+      phoneNumber: DataTypes.STRING,
       bloodType: DataTypes.STRING(1),
       rhesus: DataTypes.BOOLEAN,
       locality: DataTypes.STRING,

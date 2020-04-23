@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.DATEONLY,
       },
       phoneNumber: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING,
       },
       email: {
         type: Sequelize.STRING,

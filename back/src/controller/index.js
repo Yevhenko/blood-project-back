@@ -1,18 +1,17 @@
 const { Connection, User, Demand } = require('../db/models');
+const { phoneNumber, rhesus } = require('./handlers');
 
 async function setUser(body) {
   try {
-    const user = await User.create({
+        const user = await User.create({
       fullName: body.fullName,
       dateOfBirth: body.dateOfBirth,
-      sex: body.sex,
-      phoneNumber: body.phoneNumber,
+      phoneNumber: await phoneNumber(body),
       email: body.email,
       bloodType: body.bloodType,
-      rhesus: body.rhesus,
+      rhesus: await rhesus(body),
       locality: body.locality,
       lastBeingDonor: body.lastBeingDonor,
-      photo: body.photo,
     });
 
     return user;
@@ -56,14 +55,12 @@ async function updateUser(body, query) {
       {
         fullName: body.fullName,
         dateOfBirth: body.dateOfBirth,
-        sex: body.sex,
-        phoneNumber: body.phoneNumber,
+        phoneNumber: await phoneNumber(body),
         email: body.email,
         bloodType: body.bloodType,
-        rhesus: body.rhesus,
+        rhesus: await rhesus(body),
         locality: body.locality,
         lastBeingDonor: body.lastBeingDonor,
-        photo: body.photo,
       },
       {
         where: {
@@ -96,10 +93,9 @@ async function setDemand(body) {
   try {
     const demand = await Demand.create({
       fullName: body.fullName,
-      sex: body.sex,
-      phoneNumber: body.phoneNumber,
+      phoneNumber: await phoneNumber(body),
       bloodType: body.bloodType,
-      rhesus: body.rhesus,
+      rhesus: await rhesus(body),
       locality: body.locality,
       reason: body.reason,
       userId: body.userId,
@@ -116,10 +112,9 @@ async function updateDemand(body, query) {
   try {
     const updatedDemand = await Demand.update({
       fullName: body.fullName,
-      sex: body.sex,
-      phoneNumber: body.phoneNumber,
+      phoneNumber: await phoneNumber(body),
       bloodType: body.bloodType,
-      rhesus: body.rhesus,
+      rhesus: await rhesus(body),
       locality: body.locality,
       reason: body.reason,
       userId: body.userId,
