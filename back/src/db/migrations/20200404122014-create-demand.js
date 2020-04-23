@@ -11,21 +11,27 @@ module.exports = {
       },
       fullName: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       phoneNumber: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       bloodType: {
         type: Sequelize.STRING(1),
+        allowNull: false,
       },
       rhesus: {
         type: Sequelize.BOOLEAN,
+        allowNull: false,
       },
       locality: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       reason: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       userId: {
         type: Sequelize.INTEGER,

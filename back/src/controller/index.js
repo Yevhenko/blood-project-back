@@ -12,6 +12,7 @@ async function setUser(body) {
       rhesus: await rhesus(body),
       locality: body.locality,
       lastBeingDonor: body.lastBeingDonor,
+      telegramId: body.telegramId,
     });
 
     return user;
@@ -61,6 +62,7 @@ async function updateUser(body, query) {
         rhesus: await rhesus(body),
         locality: body.locality,
         lastBeingDonor: body.lastBeingDonor,
+        telegramId: body.telegramId,
       },
       {
         where: {
