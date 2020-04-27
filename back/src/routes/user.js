@@ -2,16 +2,17 @@
 const express = require('express');
 
 const { setUser, getUser, updateUser, getOneUser, deleteUser } = require('../controller');
+const { setValidUser, updateValidUser, validateRequest } = require('../validator/userValidator');
 
 const user = express.Router();
 
-user.post('/user', async (req, res) => {
+user.post('/user', validateRequest(setValidUser), async (req, res) => {
   try {
     const { body } = req;
 
     if (!body) {
       return res.status(404).send('Not found');
-    }
+    };
 
     const response = await setUser(body);
 
@@ -21,6 +22,7 @@ user.post('/user', async (req, res) => {
     return res.status(500).send('The user cannot be set');
   }
 });
+
 
 user.get('/user', async (req, res) => {
   try {
@@ -39,7 +41,7 @@ user.get('/user', async (req, res) => {
   }
 });
 
-user.put('/user', async (req, res) => {
+user.put('/user', validateRequest(updateValidUser), async (req, res) => {
   try {
     const userId = parseInt(req.query.id, 10);
 

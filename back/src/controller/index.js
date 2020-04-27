@@ -3,7 +3,7 @@ const { phoneNumber, rhesus } = require('./handlers');
 
 async function setUser(body) {
   try {
-        const user = await User.create({
+      const user = await User.create({
       fullName: body.fullName,
       dateOfBirth: body.dateOfBirth,
       phoneNumber: await phoneNumber(body),

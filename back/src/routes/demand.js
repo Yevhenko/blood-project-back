@@ -1,10 +1,11 @@
 const express = require('express');
 
 const { setDemand, deleteDemand, updateDemand } = require('../controller');
+const { setValidDemand, updateValidDemand, validateRequest } = require('../validator/demandValidator');
 
 const demand = express.Router();
 
-demand.post('/demand', async(req, res) => {
+demand.post('/demand', validateRequest(setValidDemand), async(req, res) => {
   try {
     const { body } = req;
 
@@ -30,7 +31,7 @@ demand.post('/demand', async(req, res) => {
 //   }
 // });
 
-demand.put('/demand', async (req, res) => {
+demand.put('/demand', validateRequest(updateValidDemand), async (req, res) => {
   try {
     const userId = parseInt(req.query.id, 10);
 

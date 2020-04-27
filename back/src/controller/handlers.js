@@ -13,7 +13,7 @@ async function phoneNumber(body) {
 async function rhesus(body) {
   try {
     if (body.rhesus === '+') return 1;
-    else if (body.rhesus === '-') return 0;
+    if (body.rhesus === '-') return 0;
   } catch (error) {
     throw new Error(error);
   }
