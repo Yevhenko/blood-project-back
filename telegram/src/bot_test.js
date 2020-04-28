@@ -1,3 +1,4 @@
+//facepalm
 require('dotenv').config();
 
 const Telegraf = require('telegraf').default;
@@ -53,7 +54,7 @@ getName.command('start', async ctx => {
 
 getName.on('text', async ctx => {
   if (ctx.message.text === '◀️ Назад') {
-    return ctx.reply('Вы уже вернулись в самое начало. Введите, пожалуйста, свое имя');
+    return ctx.reply(`Ви вже на самому початку. Введіть П.І.Б.:`);
   }
 
   ctx.session.name = ctx.message.text;
@@ -327,9 +328,11 @@ check.hears('️✅ Все вірно!', ctx => {
 
   bot.telegram.sendMessage(
     process.env.ADMIN,
-    `Хоп-хэй-ла-ла-лэй!!! \n\nП.І.Б.: [${ctx.session.name}](tg://user?id=${ctx.from.id});\nРік народження: ${ctx.session.birth};\nМісто/село: ${ctx.session.city};` +
-      `\nГрупа крові: ${ctx.session.bloodgroup};\nРезус-фактор: ${ctx.session.bloodrf};\neMail: ${ctx.session.email};` +
-      `\nНомер: ${ctx.session.phone}`,
+    `Хоп-хэй-ла-ла-лэй!!! \n\nП.І.Б.: [${ctx.session.name}](tg://user?id=${ctx.from.id});
+    \nID: [${ctx.session.id}](tg://user?id=${ctx.from.id});
+    \nРік народження: ${ctx.session.birth};\nМісто/село: ${ctx.session.city};
+    \nГрупа крові: ${ctx.session.bloodgroup};\nРезус-фактор: ${ctx.session.bloodrf};\neMail: ${ctx.session.email};
+    \nНомер: ${ctx.session.phone}`,
     { parse_mode: 'markdown' }
   );
   ctx.session = null;
