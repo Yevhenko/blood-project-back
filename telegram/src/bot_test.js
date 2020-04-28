@@ -54,7 +54,7 @@ getName.command('start', async ctx => {
 
 getName.on('text', async ctx => {
   if (ctx.message.text === '◀️ Назад') {
-    return ctx.reply(`Ви вже на самому початку. Введіть П.І.Б.:`);
+    return ctx.reply(`Ви вже на самому початку.\nВведіть, будь-ласка, Ваші прізвище, ім'я та по-батькові:`);
   }
 
   ctx.session.name = ctx.message.text;
@@ -68,8 +68,7 @@ getName.on('text', async ctx => {
 getBirth.hears(/^[0-9]{4}$/, async ctx => {
   ctx.session.birth = ctx.message.text;
   ctx.reply(
-    'З якого Ви міста/села?' +
-      `\n\nРаніше введені дані:\nП.І.Б.: ${ctx.session.name};\nРік народження: ${ctx.session.birth}`,
+    `З якого Ви міста/села?\n\nРаніше введені дані:\nП.І.Б.: ${ctx.session.name};\nРік народження: ${ctx.session.birth}`,
     {
       reply_markup: {
         keyboard: [['◀️ Назад', '❌ Стерти все!']],
@@ -92,8 +91,7 @@ getBirth.hears('◀️ Назад', async ctx => {
 
 getBirth.on('text', async ctx => {
   ctx.reply(
-    'Введіть тільки Рік народження в формате 1990' +
-      `\n\nРаніше введені дані:\nП.І.Б.: ${ctx.session.name}`,
+    `Введіть тільки Рік народження в формате 1990\n\nРаніше введені дані:\nП.І.Б.: ${ctx.session.name}`,
     {
       reply_markup: {
         keyboard: [['◀️ Назад', '❌ Стерти все!']],

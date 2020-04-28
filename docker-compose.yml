@@ -1,0 +1,27 @@
+# DO NOT FORGET!
+# version: '2'
+# services:
+#   nodejs:
+#     image: node:12-alpine
+#     build:
+#       context: telegram/src/
+#     container_name: telegram-blood
+#     depends_on:
+#       - dbmain
+#     env_file:
+#       - telegram/src/.env
+#     ports:
+#       - 3000:3000
+#     command:  sh -c "./node_modules/sequelize-cli/lib/sequelize db:migrate && node index"
+
+#   dbmain:
+#     container_name: db-blood
+#     image: postgres:9.6.2-alpine
+#     environment:
+#       POSTGRES_USER: main
+#       POSTGRES_DB: main
+#       POSTGRES_PASSWORD: blood
+#     ports:
+#       - 54321:5432
+#     volumes:
+#       - ./back/src/db/data:/var/lib/postgresql/data
