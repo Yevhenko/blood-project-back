@@ -33,6 +33,7 @@ demand.post('/demand', validateRequest(setValidDemand), async(req, res) => {
 
 demand.put('/demand', validateRequest(updateValidDemand), async (req, res) => {
   try {
+    const { body, query } = req;
     const userId = parseInt(req.query.id, 10);
 
     if (!userId) {
@@ -50,6 +51,7 @@ demand.put('/demand', validateRequest(updateValidDemand), async (req, res) => {
 
 demand.delete('/demand', async (req, res) => {
   try {
+    const { query } = req;
     const userId = parseInt(req.query.id, 10);
 
     if (!userId) {

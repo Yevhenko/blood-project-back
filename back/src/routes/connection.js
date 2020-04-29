@@ -23,6 +23,7 @@ connection.post('/connection', async (req, res) => {
 
 connection.delete('/connection', async (req, res) => {
   try {
+    const { query } = req;
     const userId = parseInt(req.query.id, 10);
 
     if (!userId) {

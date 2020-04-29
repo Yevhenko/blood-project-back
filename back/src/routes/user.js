@@ -26,6 +26,7 @@ user.post('/user', validateRequest(setValidUser), async (req, res) => {
 
 user.get('/user', async (req, res) => {
   try {
+    const { query } = req;
     const userId = parseInt(req.query.id, 10);
 
     if (!userId) {
@@ -43,6 +44,7 @@ user.get('/user', async (req, res) => {
 
 user.put('/user', validateRequest(updateValidUser), async (req, res) => {
   try {
+    const { body, query } = req;
     const userId = parseInt(req.query.id, 10);
 
     if (!userId) {
@@ -60,6 +62,7 @@ user.put('/user', validateRequest(updateValidUser), async (req, res) => {
 
 user.delete('/user', async (req, res) => {
   try {
+    const { query } = req;
     const userId = parseInt(req.query.id, 10);
 
     if (!userId) {
