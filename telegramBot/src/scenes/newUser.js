@@ -5,35 +5,26 @@ const validator = require('validator');
 // new user registrator five-step wizard
 const newUser = new WizardScene(
   'new_user',
-  async ctx => {
-    ctx.reply('Send me your number please', { 
+  ctx => {
+    ctx.reply('Share please your contact pressing a button below', { 
       reply_markup: { 
-        keyboard: [[{text: '📲 Send phone number', request_contact: true}]],
+        keyboard: [[{text: '📲 Share contact', request_contact: true}]],
         resize_keyboard: true,
         one_time_keyboard: true, 
       },
     });
+    
+    return ctx.wizard.next();
+  },
+  ctx => {
+    //here will be some validation soon
     ctx.wizard.state.contact = ctx.message.contact;
-    console.log(ctx.wizard.state.contact);
-    return ctx.wizard.next();
-  },
-  ctx => {
-    ctx.reply("Please, tell me your FULL name"); 
-    // enter your name
-    return ctx.wizard.next();
-  },
-  (ctx) => {
-    // validation example
-    if (ctx.message.text.length < 2) {
-      ctx.reply('Please enter your real name');
-      return ctx.wizard.prev();
-    } else return ctx.wizard.next();
-  },  
-  ctx => {
-    ctx.wizard.state.fullName = ctx.message.text; // store fullName in the state to share data between middlewares
+    console.log(ctx.wizard.state.contact);    // enter your name
     ctx.reply(`Please enter your email:`);
+
     return ctx.wizard.next();
   },
+  
   ctx => {
     console.log(ctx.message.text);
     if (validator.isEmail(ctx.message.text)) {
@@ -45,7 +36,7 @@ const newUser = new WizardScene(
     } else return ctx.wizard.prev();
   },
   ctx => {
-    ctx.wizard.state.email = ctx.message.text; // store fullName in the state to share data between middlewares
+    ctx.wizard.state.email = ctx.message.text; // store fullName in the state
     console.log(ctx.wizard.state.email);
     
     ctx.reply(`Please enter your date of birth:`);
@@ -53,20 +44,30 @@ const newUser = new WizardScene(
   },
   ctx => {
     console.log(ctx.message.text);
-    if (validator.toDate(ctx.message.text)) {
-      ctx.wizard.state.dob = ctx.message.text;    
-      ctx.reply(`Please choose your blood type:`, Markup.inlineKeyboard([
-        Markup.callbackButton('1', () => ctx.wizard.state.bloodType = 1),
-        Markup.callbackButton('2', () => ctx.wizard.state.bloodType = 2),
-        Markup.callbackButton('3', () => ctx.wizard.state.bloodType = 3),
-        Markup.callbackButton('4', () => ctx.wizard.state.bloodType = 4),
-        Markup.callbackButton(`I don't know`, () => ctx.wizard.state.bloodType = undefined),
-      ]).extra());
-      return ctx.wizard.next();
-    } else return ctx.wizard.prev();
+    ctx.wizard.state.dob = validator.toDate(ctx.message.text);
+    console.log(ctx.wizard.state.dob);
+    ctx.reply(`Please choose your blood type:`, Markup.inlineKeyboard([
+      Markup.callbackButton('1', () => ctx.wizard.state.bloodType = 1),
+      Markup.callbackButton('2', () => ctx.wizard.state.bloodType = 2),
+      Markup.callbackButton('3', () => ctx.wizard.state.bloodType = 3),
+      Markup.callbackButton('4', () => ctx.wizard.state.bloodType = 4),
+      Markup.callbackButton(`I don't know`, () => ctx.wizard.state.bloodType = undefined),
+    ]).extra());
+    return ctx.wizard.next();
   },
   ctx => {
+    console.log(ctx.wizard.state.bloodType);
+    ctx.reply(`Please choose your rhesus:`, Markup.inlineKeyboard([
+      Markup.callbackButton('+', () => ctx.wizard.state.bloodType = '+'),
+      Markup.callbackButton('-', () => ctx.wizard.state.bloodType = '-'),
+      Markup.callbackButton(`I don't care:`, () => ctx.wizard.state.bloodType = undefined),
+    ]).extra());
+    return ctx.wizard.next();
+  },  
+  async ctx => {
     // ctx.replyWithDice();
+    // 
+    // sharing ctx.wizard.state to DB with await
     // 
     return ctx.wizard.leave();
   },
