@@ -4,6 +4,8 @@ const bot = require('./bot');
 const telegram = require('telegraf/telegram');
 const { Stage } = require('telegraf');
 const { newUser } = require('./scenes/newUser');
+const { mainMenu } = require('./scenes/mainMenu');
+
 // const { startRegistration, mainMenu } = require('./menu');
 
 const stage = new Stage([newUser]);
@@ -11,6 +13,11 @@ const stage = new Stage([newUser]);
 
 bot.use(session());
 bot.use(stage.middleware());
+
+bot.telegram.getMe().then((bot_informations) => {
+  bot.options.username = bot_informations.username;
+  console.log("Server has initialized bot nickname. Nick: "+bot_informations.username);
+});
 
 bot.start(ctx => {
   let user = ctx.update.message.from;
@@ -30,3 +37,5 @@ bot.on('message', (msg) => {
 })
 
 bot.launch();
+// Log
+console.info('Bot is up and running')
