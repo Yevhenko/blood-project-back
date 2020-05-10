@@ -1,3 +1,5 @@
+require('dotenv').config();
+const Telegraf = require('telegraf');
 const session = require('telegraf/session');
 const Router = require('telegraf/router');
 const bot = require('./bot');
@@ -10,6 +12,7 @@ const { mainMenu } = require('./scenes/mainMenu');
 
 const stage = new Stage([newUser]);
 
+// bot.use(Telegraf.log());
 
 bot.use(session());
 bot.use(stage.middleware());
@@ -24,7 +27,7 @@ bot.start(ctx => {
   console.log(user);
   // check if there in DB any user with this telegramID
   // if (!(await db.User.findByTelegramId(ctx.update.message.from.id))) 
-  ctx.reply(`Hello ${user.first_name}! You have joined Blood-Exchange-Bot!`, ctx.scene.enter('new_user'));
+  ctx.replyWithHTML(`Вітаю Вас, пане ${user.first_name}! \nМене звати <b>Кривавий бот</b>, я рятую людям життя! Долучайся!! `, ctx.scene.enter('new_user'));
   // ctx.reply(`Wellcome back ${user.first_name}, please choose:\n`, ctx.scene.enter(main_menu));
 });
 
