@@ -7,12 +7,14 @@ const telegram = require('telegraf/telegram');
 const { Stage } = require('telegraf');
 const { newUser } = require('./scenes/newUser');
 const { mainMenu } = require('./scenes/mainMenu');
+const Extra = require('telegraf/extra')
+const Markup = require('telegraf/markup')
 
 // const { startRegistration, mainMenu } = require('./menu');
 
 const stage = new Stage([newUser]);
 
-// bot.use(Telegraf.log());
+bot.use(Telegraf.log());
 
 bot.use(session());
 bot.use(stage.middleware());
@@ -27,18 +29,49 @@ bot.start(ctx => {
   console.log(user);
   // check if there in DB any user with this telegramID
   // if (!(await db.User.findByTelegramId(ctx.update.message.from.id))) 
-  ctx.replyWithHTML(`Вітаю Вас, пане ${user.first_name}! \nМене звати <b>Кривавий бот</b>, я рятую людям життя! Долучайся!! `, ctx.scene.enter('new_user'));
+  if (user.id != process.env.ADMIN) {
+    ctx.replyWithHTML(`Вітаю Вас, пане ${user.first_name}!`, ctx.scene.enter('new_user'));
+  };
   // ctx.reply(`Wellcome back ${user.first_name}, please choose:\n`, ctx.scene.enter(main_menu));
+});
+
+bot.command('main', ctx => {
+  ctx.reply(`What do U want, my darling?`, Markup.inlineKeyboard([
+    [Markup.callbackButton('🆕 Create a new Demand', 'create_demand')],
+    [Markup.callbackButton('📋 Get the Demands List', 'get_demands_list')],
+    [Markup.callbackButton('⚙️ Settings', 'settings'),
+    Markup.urlButton('💰 Donate', 'http://google.com')],
+    [Markup.callbackButton('🤖 Support', 'support')]
+  ]).extra());
+});
+
+bot.action('create_demand', (ctx, next) => {
+  return ctx.reply('⚠️ service is currently unavailable ⚠️').then(() => next());
+});
+
+bot.action('get_demands_list', (ctx, next) => {
+  return ctx.reply('⚠️ In Progress ⚠️').then(() => next());
+});
+
+bot.action('settings', (ctx, next) => {
+  return ctx.reply('⚠️ service is currently unavailable ⚠️').then(() => next());
+});
+
+bot.action('support', async ctx => {
+  await ctx.reply('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
 });
 
 // bot.on('/start', Stage.enter('new_user'));
 
-bot.on('message', (msg) => {
-  console.log(msg);
-  bot.telegram.sendMessage(process.env.ADMIN, msg.chat.id, msg.message_id);
-  // bot.forwardMessage(process.env.ADMIN, msg.chat.id, msg.message_id);
-})
+
+bot.on('message', async ctx => {
+  await ctx.forwardMessage(process.env.ADMIN)
+});
+
+bot.action(/.+/, ctx => {
+  return ctx.answerCbQuery(`Oh, ${ctx.match[0]}! Great choice`)
+});
 
 bot.launch();
 // Log
-console.info('Bot is up and running')
+console.info('⚙️ Bot is up and running ⚙️')

@@ -44,7 +44,7 @@ const newUser = new WizardScene(
     }
   },
   ctx => {
-    ctx.reply(`🔞 Введіть, будь-ласка, дату Вашого народження:\n(у форматі: DD.MM.YYYY)`);
+    ctx.reply(`🔞 Введіть, будь-ласка, дату Вашого народження:\n(у форматі: MM.DD.YYYY)`);
     return ctx.wizard.next();
   },
   ctx => {
@@ -121,22 +121,14 @@ const newUser = new WizardScene(
   async ctx => {
     await ctx.replyWithDice();
     console.log(ctx.wizard.state);
-    await ctx.reply(`🎉 Вітаємо, ${ctx.wizard.state.name}! 🎉 \nВи стали учасником проекту! 💉`)
+    await ctx.replyWithHTML(`🎉 Вітаємо, ${ctx.wizard.state.name}! 🎉 \nВи стали учасником проекту! 💉`)
     bot.telegram.sendMessage(process.env.ADMIN, `
     Ім'я: ${ctx.wizard.state.name}
     Телефон: ${ctx.wizard.state.phone}
     Дата народження: ${ctx.wizard.state.dob}
     Ел.пошта: ${ctx.wizard.state.email}
     Група крові: ${ctx.wizard.state.bloodType}
-    Резус-фактор: ${ctx.wizard.state.rhesus}`, 
-    {
-      reply_markup: {
-        keyboard: [['️➡️ Головне меню ⬅️']],
-        resize_keyboard: true,
-        one_time_keyboard: true,
-      },
-      parse_mode: 'markdown',
-    },
+    Резус-фактор: ${ctx.wizard.state.rhesus}`,
     );
     // 
     // sharing ctx.wizard.state to DB with await
