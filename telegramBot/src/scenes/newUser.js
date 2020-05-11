@@ -121,7 +121,7 @@ const newUser = new WizardScene(
   async ctx => {
     await ctx.replyWithDice();
     console.log(ctx.wizard.state);
-    await ctx.replyWithHTML(`🎉 Вітаємо, ${ctx.wizard.state.name}! 🎉 \nВи стали учасником проекту! 💉`)
+    await ctx.replyWithHTML(`🎉 Вітаємо, ${ctx.wizard.state.name}! 🎉 \nВи стали учасником проекту! 💉`, Markup.removeKeyboard().extra())
     bot.telegram.sendMessage(process.env.ADMIN, `
     Ім'я: ${ctx.wizard.state.name}
     Телефон: ${ctx.wizard.state.phone}
