@@ -6,13 +6,14 @@ const bot = require('./bot');
 const telegram = require('telegraf/telegram');
 const { Stage } = require('telegraf');
 const { newUser } = require('./scenes/newUser');
+const { createDemand } = require('./scenes/createDemand');
 const { mainMenu } = require('./scenes/mainMenu');
 const Extra = require('telegraf/extra')
 const Markup = require('telegraf/markup')
 
 // const { startRegistration, mainMenu } = require('./menu');
 
-const stage = new Stage([newUser]);
+const stage = new Stage([newUser, createDemand]);
 
 bot.use(Telegraf.log());
 
@@ -36,7 +37,7 @@ bot.start(ctx => {
 });
 
 bot.command('main', ctx => {
-  ctx.reply(`What do U want, my darling?`, Markup.inlineKeyboard([
+  ctx.reply(`Натисни кнопочку знизу`, Markup.inlineKeyboard([
     [Markup.callbackButton('🆕 Create a new Demand', 'create_demand')],
     [Markup.callbackButton('📋 Get the Demands List', 'get_demands_list')],
     [Markup.callbackButton('⚙️ Settings', 'settings'),
@@ -45,8 +46,16 @@ bot.command('main', ctx => {
   ]).extra());
 });
 
-bot.action('create_demand', (ctx, next) => {
-  return ctx.reply('⚠️ service is currently unavailable ⚠️').then(() => next());
+bot.action('create_demand', async ctx => {
+  try {
+    await ctx.answerCbQuery();
+    await ctx.replyWithHTML(`Вітаю Вас!`);
+
+    await ctx.scene.enter('create_demand');
+    
+  } catch (error) {
+    console.error();    
+  }
 });
 
 bot.action('get_demands_list', (ctx, next) => {
@@ -58,7 +67,11 @@ bot.action('settings', (ctx, next) => {
 });
 
 bot.action('support', async ctx => {
-  await ctx.reply('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
+  try {
+    await ctx.reply('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
+  } catch (error) {
+    console.error();    
+  }
 });
 
 // bot.on('/start', Stage.enter('new_user'));
