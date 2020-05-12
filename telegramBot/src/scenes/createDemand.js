@@ -16,33 +16,33 @@ const createDemand = new WizardScene(
   },
   ctx => {
     ctx.reply(`Почнемо з найголовнішого: \nкров якої групи Ви потребуєте?`, Markup.keyboard([
-      Markup.button('1'),
-      Markup.button('2'),
-      Markup.button('3'),
-      Markup.button('4'),
-    ]).resize().extra());
+      ['1', '2'],
+      ['3', '4']
+      
+      // [Markup.button('1'), Markup.button('2')],
+      // [Markup.button('3'), Markup.button('4'),]
+    ]).oneTime().resize().extra());
     return ctx.wizard.next();
   },
   ctx => {
     ctx.wizard.state.bloodType = ctx.message.text;
     console.log(ctx.wizard.state.bloodType);
     ctx.reply(`А резус-фактор?`, Markup.keyboard([      
-      Markup.button('+'),
-      Markup.button('-'),
+      [Markup.button('+'), Markup.button('-')]
     ]).resize().extra());
     return ctx.wizard.next();
   },
   ctx => {  
     ctx.wizard.state.rhesus = ctx.message.text;
     console.log(ctx.wizard.state.rhesus);
-    ctx.reply('Розкажіть, будь-ласка, для чого Вам потрібна донорська кров, а також додаткову інформацію:');
+    ctx.reply('Розкажіть, будь-ласка, для чого Вам потрібна донорська кров, а також додаткову інформацію:', Markup.removeKeyboard().extra());
     return ctx.wizard.next();
     // return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   ctx => {
     ctx.wizard.state.aim = ctx.message.text;
 
-    ctx.reply(
+    ctx.replyWithMarkdown(
       `Перевірте Ваші дані:
 
     Група крові: ${ctx.wizard.state.bloodType}
@@ -67,11 +67,12 @@ const createDemand = new WizardScene(
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   async ctx => {
-    await ctx.replyWithHTML(`💉`);
+    await ctx.replyWithHTML(`💉`, Markup.removeKeyboard().extra());
     console.log(ctx.wizard.state);
-    await ctx.replyWithHTML(`🎉 Вітаємо, ${ctx.wizard.state.name}! 🎉 \nВи стали учасником проекту! 💉`, Markup.removeKeyboard().extra())
+    await ctx.replyWithHTML(`🎉 Вітаю! 🎉 \nЗаявку створено! 💉`);
     bot.telegram.sendMessage(process.env.ADMIN, `
-
+    Заявка від: ${ctx.from.first_name} ${ctx.from.last_name}
+    Telegram ID: ${ctx.from.id}
     Група крові: ${ctx.wizard.state.bloodType}
     Резус-фактор: ${ctx.wizard.state.rhesus}
     Мета: ${ctx.wizard.state.aim}`,

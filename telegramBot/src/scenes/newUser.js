@@ -3,6 +3,7 @@ const Markup = require('telegraf/markup');
 const WizardScene = require('telegraf/scenes/wizard');
 const bot = require('../bot');
 const validator = require('validator');
+const { fullNameValidator } = require('../helpers/fullNameValidator');
 // const Telegraf = require('telegraf');
 
 
@@ -10,20 +11,18 @@ const validator = require('validator');
 const newUser = new WizardScene(
   'new_user',
   ctx => {
-    ctx.reply(`Давайте знайомитися! Як Вас звати?`);
+    ctx.replyWithHTML(`Давайте знайомитися! Як Вас звати?\n(<i>лише українською</i> 🇺🇦)`);
     return ctx.wizard.next();
   },
   ctx => {
-    if (ctx.message.text.length < 4) {      
-      ctx.reply(`🤦‍♂️ Нема такого ім'я.`);
-      ctx.wizard.back();  // Set the listener to the previous function
-      return ctx.wizard.steps[ctx.wizard.cursor](ctx);  // Manually trigger the listener with the current ctx
-
-    } else {
+    if ((ctx.message.text.length > 1) && fullNameValidator(ctx.message.text)) {      
       ctx.wizard.state.name = ctx.message.text;
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);  // Manually trigger the listener with the current ctx
-
+    } else {
+      ctx.reply(`🤦‍♂️ Нема такого ім'я.`);
+      ctx.wizard.back();  // Set the listener to the previous function
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx);  // Manually trigger the listener with the current ctx      
     }
   },
   ctx => {
@@ -60,22 +59,37 @@ const newUser = new WizardScene(
   },
   ctx => {
     console.log(ctx.wizard.state.dob);
-    ctx.reply(`Ну і найголовніше: \nяка у Вас рупа крові?`, Markup.keyboard([
-      Markup.button('1'),
-      Markup.button('2'),
-      Markup.button('3'),
-      Markup.button('4'),
+    ctx.reply(`Ну і найголовніше: \nяка у Вас група крові?`, Markup.keyboard([
+      ['1', '2'],
+      ['3', '4']
     ]).resize().extra());
     return ctx.wizard.next();
+  },
+  ctx => {
+    if (ctx.message.text == '1' || ctx.message.text == '2' || ctx.message.text == '3' || ctx.message.text == '4') {
+      ctx.wizard.next();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+    } else {
+      ctx.wizard.prev();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+    }
   },
   ctx => {
     ctx.wizard.state.bloodType = ctx.message.text;
     console.log(ctx.wizard.state.bloodType);
     ctx.reply(`Втомився!? Ніхто не обіцяв, що буде легко.\nОстаннє питання: Ваш резус-фактор?`, Markup.keyboard([      
-      Markup.button('+'),
-      Markup.button('-'),
+      ['+', '-']
     ]).resize().extra());
     return ctx.wizard.next();
+  },
+  ctx => {
+    if (ctx.message.text == '+' || ctx.message.text == '-') {
+      ctx.wizard.next();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+    } else {
+      ctx.wizard.prev();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+    }
   },
   ctx => {  
     ctx.wizard.state.rhesus = ctx.message.text;
@@ -111,7 +125,7 @@ const newUser = new WizardScene(
 
   },
   ctx => {
-    if (ctx.message.text == '❌ Спочатку') {
+    if (ctx.message.text != '✅ Все вірно!') {
       ctx.wizard.selectStep(0);
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }; 

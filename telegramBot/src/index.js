@@ -54,7 +54,7 @@ bot.action('create_demand', async ctx => {
     await ctx.scene.enter('create_demand');
     
   } catch (error) {
-    console.error();    
+    console.log(error.message);    
   }
 });
 
