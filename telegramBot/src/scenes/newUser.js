@@ -70,7 +70,7 @@ const newUser = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     } else {
-      ctx.wizard.prev();
+      ctx.wizard.back();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }
   },
@@ -87,7 +87,7 @@ const newUser = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     } else {
-      ctx.wizard.prev();
+      ctx.wizard.back();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }
   },
@@ -98,7 +98,6 @@ const newUser = new WizardScene(
       reply_markup: { 
         keyboard: [[{text: '📲 Поділитися контактом', request_contact: true}]],
         resize_keyboard: true,
-        one_time_keyboard: true, 
       },
     });
     return ctx.wizard.next();
@@ -135,7 +134,7 @@ const newUser = new WizardScene(
   async ctx => {
     await ctx.replyWithDice();
     console.log(ctx.wizard.state);
-    await ctx.replyWithHTML(`🎉 Вітаємо, ${ctx.wizard.state.name}! 🎉 \nВи стали учасником проекту! 💉`, Markup.removeKeyboard().extra())
+    await ctx.replyWithHTML(`🎉 Вітаємо, ${ctx.wizard.state.name}! 🎉 \nВи стали учасником проекту! 💉\nTисни /main для головного меню.`, Markup.removeKeyboard().extra())
     bot.telegram.sendMessage(process.env.ADMIN, `
     Ім'я: ${ctx.wizard.state.name}
     Телефон: ${ctx.wizard.state.phone}

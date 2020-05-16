@@ -31,7 +31,7 @@ bot.start(ctx => {
   // check if there in DB any user with this telegramID
   // if (!(await db.User.findByTelegramId(ctx.update.message.from.id))) 
   if (user.id != process.env.ADMIN) {
-    ctx.replyWithHTML(`Вітаю Вас, пане ${user.first_name}!`, ctx.scene.enter('new_user'));
+    ctx.replyWithHTML(`Вітаю Вас, пане ${user.first_name}! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
   };
   // ctx.reply(`Wellcome back ${user.first_name}, please choose:\n`, ctx.scene.enter(main_menu));
 });

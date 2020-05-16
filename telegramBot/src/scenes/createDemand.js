@@ -25,12 +25,30 @@ const createDemand = new WizardScene(
     return ctx.wizard.next();
   },
   ctx => {
+    if (ctx.message.text == '1' || ctx.message.text == '2' || ctx.message.text == '3' || ctx.message.text == '4') {
+      ctx.wizard.next();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+    } else {
+      ctx.wizard.back();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+    }
+  },
+  ctx => {
     ctx.wizard.state.bloodType = ctx.message.text;
     console.log(ctx.wizard.state.bloodType);
     ctx.reply(`А резус-фактор?`, Markup.keyboard([      
       [Markup.button('+'), Markup.button('-')]
     ]).resize().extra());
     return ctx.wizard.next();
+  },
+  ctx => {
+    if (ctx.message.text == '+' || ctx.message.text == '-') {
+      ctx.wizard.next();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+    } else {
+      ctx.wizard.back();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+    }
   },
   ctx => {  
     ctx.wizard.state.rhesus = ctx.message.text;
