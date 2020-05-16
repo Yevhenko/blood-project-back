@@ -5,7 +5,7 @@ const WizardScene = require('telegraf/scenes/wizard');
 // main menu for registrated users only
 const mainMenu = new WizardScene(
   'main_menu',
-  //in progress
+  // in progress
   ctx => {
     ctx.reply(`in progress`);
 
