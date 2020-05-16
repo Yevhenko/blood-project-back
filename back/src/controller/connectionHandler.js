@@ -1,16 +1,14 @@
-const { Connection, User, Demand } = require('../db/models');
+const { Connection } = require('../db/models');
 
-// eslint-disable-next-line no-unused-vars
 async function setConnection(body) {
   try {
-    const connection = await Connection.create({
-      demandId: body.demandId,
+    return await Connection.create({
       userId: body.userId,
+      demandId: body.demandId,
     });
-
-    return connection;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 

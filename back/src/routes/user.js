@@ -3,16 +3,17 @@ const express = require('express');
 
 const { setUser, getUser, updateUser, getOneUser, deleteUser } = require('../controller');
 const { setValidUser, updateValidUser, validateRequest } = require('../validator/userValidator');
+const { auth } = require('../auth');
 
 const user = express.Router();
 
-user.post('/user', validateRequest(setValidUser), async (req, res) => {
+user.post('/user', validateRequest(setValidUser), auth(), async (req, res) => {
   try {
     const { body } = req;
 
     if (!body) {
       return res.status(404).send('Not found');
-    };
+    }
 
     const response = await setUser(body);
 
@@ -22,7 +23,6 @@ user.post('/user', validateRequest(setValidUser), async (req, res) => {
     return res.status(500).send('The user cannot be set');
   }
 });
-
 
 user.get('/user', async (req, res) => {
   try {

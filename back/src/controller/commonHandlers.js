@@ -11,12 +11,23 @@ async function phoneNumber(body) {
 }
 
 async function rhesus(body) {
-  try {
-    if (body.rhesus === '+') return 1;
-    if (body.rhesus === '-') return 0;
-  } catch (error) {
-    throw new Error(error);
+  switch (body.rhesus) {
+    case '+':
+      return 1;
+    case '-':
+      return 0;
+
+    default:
+      throw new Error();
   }
 }
 
-module.exports = { phoneNumber, rhesus };
+function strcmp(a, b) {
+  if (a < b) return -1;
+
+  if (a > b) return 1;
+
+  return 0;
+}
+
+module.exports = { strcmp, phoneNumber, rhesus };

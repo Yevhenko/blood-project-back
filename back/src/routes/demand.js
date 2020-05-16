@@ -1,11 +1,16 @@
 const express = require('express');
 
 const { setDemand, deleteDemand, updateDemand } = require('../controller');
-const { setValidDemand, updateValidDemand, validateRequest } = require('../validator/demandValidator');
+const {
+  setValidDemand,
+  updateValidDemand,
+  validateRequest,
+} = require('../validator/demandValidator');
+const { auth } = require('../auth');
 
 const demand = express.Router();
 
-demand.post('/demand', validateRequest(setValidDemand), async(req, res) => {
+demand.post('/demand', validateRequest(setValidDemand), auth(), async (req, res) => {
   try {
     const { body } = req;
 

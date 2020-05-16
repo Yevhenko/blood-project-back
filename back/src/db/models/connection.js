@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {},
   );
+  // eslint-disable-next-line no-unused-vars
   Connection.associate = (models) => {
     // associations can be defined here
   };

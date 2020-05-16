@@ -1,4 +1,4 @@
-const { Connection, User, Demand } = require('../db/models');
+const { Demand } = require('../db/models');
 const { phoneNumber, rhesus } = require('./commonHandlers');
 
 async function setDemand(body) {
@@ -22,15 +22,16 @@ async function setDemand(body) {
 
 async function updateDemand(body, query) {
   try {
-    const updatedDemand = await Demand.update({
-      fullName: body.fullName,
-      phoneNumber: await phoneNumber(body),
-      bloodType: body.bloodType,
-      rhesus: await rhesus(body),
-      locality: body.locality,
-      reason: body.reason,
-      userId: body.userId,
-    },
+    const updatedDemand = await Demand.update(
+      {
+        fullName: body.fullName,
+        phoneNumber: await phoneNumber(body),
+        bloodType: body.bloodType,
+        rhesus: await rhesus(body),
+        locality: body.locality,
+        reason: body.reason,
+        userId: body.userId,
+      },
       {
         where: {
           id: query.id,

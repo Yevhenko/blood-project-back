@@ -38,3 +38,5 @@ connection.delete('/connection', async (req, res) => {
     return res.status(500).send('The Connection cannot be deleted at the moment');
   }
 });
+
+module.exports = connection;
