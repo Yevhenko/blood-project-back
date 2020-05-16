@@ -22,7 +22,7 @@ async function setUser(body) {
   }
 }
 
-async function getUser() {
+async function getUsers() {
   try {
     const users = await User.findAll();
 
@@ -93,7 +93,7 @@ async function deleteUser(query) {
 
 module.exports = {
   setUser,
-  getUser,
+  getUsers,
   updateUser,
   getOneUser,
   deleteUser,

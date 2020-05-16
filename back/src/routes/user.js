@@ -1,13 +1,12 @@
 /* eslint-disable object-curly-newline */
 const express = require('express');
 
-const { setUser, getUser, updateUser, getOneUser, deleteUser } = require('../controller');
+const { setUser, getUsers, updateUser, getOneUser, deleteUser } = require('../controller');
 const { setValidUser, updateValidUser, validateRequest } = require('../validator/userValidator');
-const { auth } = require('../auth');
 
 const user = express.Router();
 
-user.post('/user', validateRequest(setValidUser), auth(), async (req, res) => {
+user.post('/user', validateRequest(setValidUser), async (req, res) => {
   try {
     const { body } = req;
 
@@ -30,7 +29,7 @@ user.get('/user', async (req, res) => {
     const userId = parseInt(req.query.id, 10);
 
     if (!userId) {
-      const userList = await getUser();
+      const userList = await getUsers();
       res.send(userList);
     } else {
       const oneUser = await getOneUser(query);
