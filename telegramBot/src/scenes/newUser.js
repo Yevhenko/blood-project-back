@@ -4,6 +4,10 @@ const WizardScene = require('telegraf/scenes/wizard');
 const validator = require('validator');
 const bot = require('../bot');
 const { fullNameValidator } = require('../helpers/fullNameValidator');
+const { setUser } = require('../../../back/src/controller/userHandler');
+const { User } = require('../../../back/src/db/models/');
+
+
 // const Telegraf = require('telegraf');
 
 // new user registrator five-step wizard
@@ -145,6 +149,18 @@ const newUser = new WizardScene(
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   async ctx => {
+    const user = {
+      fullName: ctx.wizard.state.name,
+      dateOfBirth: ctx.wizard.state.dob,
+      phoneNumber: ctx.wizard.state.phone,
+      email: ctx.wizard.state.email,
+      bloodType: ctx.wizard.state.bloodType,
+      rhesus: ctx.wizard.state.rhesus,
+      telegramId: ctx.from.id,
+    };
+
+    await setUser(user);
+    
     await ctx.replyWithDice();
     console.log(ctx.wizard.state);
     await ctx.replyWithHTML(

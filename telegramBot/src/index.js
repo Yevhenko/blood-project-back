@@ -1,15 +1,19 @@
 require('dotenv').config();
 const Telegraf = require('telegraf');
 const session = require('telegraf/session');
-const Router = require('telegraf/router');
+// const Router = require('telegraf/router');
 const bot = require('./bot');
-const telegram = require('telegraf/telegram');
+// const telegram = require('telegraf/telegram');
 const { Stage } = require('telegraf');
 const { newUser } = require('./scenes/newUser');
 const { createDemand } = require('./scenes/createDemand');
-const { mainMenu } = require('./scenes/mainMenu');
-const Extra = require('telegraf/extra')
-const Markup = require('telegraf/markup')
+// const { mainMenu } = require('./scenes/mainMenu');
+// const Extra = require('telegraf/extra')
+const Markup = require('telegraf/markup');
+const { getOneUser } = require('../../../back/src/controller/userHandler');
+
+// const { User } = require('../../back/src/db/models/');
+
 
 // const { startRegistration, mainMenu } = require('./menu');
 
@@ -26,23 +30,27 @@ bot.telegram.getMe().then((bot_informations) => {
 });
 
 bot.start(ctx => {
-  let user = ctx.update.message.from;
-  console.log(user);
+  const thisUser = await getOneUser(ctx.from.id);
+  console.log(thisUser);
   // check if there in DB any user with this telegramID
-  // if (!(await db.User.findByTelegramId(ctx.update.message.from.id))) 
-  if (user.id != process.env.ADMIN) {
-    ctx.replyWithHTML(`Вітаю Вас, пане ${user.first_name}! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
+
+  if (thisUser.id !== process.env.ADMIN) {
+    ctx.replyWithHTML(`Вітаю Вас, ${thisUser.first_name}! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
   };
+  // if (!(await db.User.findByTelegramId(ctx.update.message.from.id))) 
+  // if (thisUser.id !== process.env.ADMIN) {
+  //   ctx.replyWithHTML(`Вітаю Вас, ${thisUser.first_name}! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
+  // };
   // ctx.reply(`Wellcome back ${user.first_name}, please choose:\n`, ctx.scene.enter(main_menu));
 });
 
 bot.command('main', ctx => {
   ctx.reply(`Натисни кнопочку знизу`, Markup.inlineKeyboard([
-    [Markup.callbackButton('🆕 Create a new Demand', 'create_demand')],
-    [Markup.callbackButton('📋 Get the Demands List', 'get_demands_list')],
-    [Markup.callbackButton('⚙️ Settings', 'settings'),
+    [Markup.callbackButton('🆕 Створити нову заявку', 'create_demand')],
+    [Markup.callbackButton('📋 Список усіх заявок', 'get_demands_list')],
+    [Markup.callbackButton('⚙️ Налаштування', 'settings'),
     Markup.urlButton('💰 Donate', 'http://google.com')],
-    [Markup.callbackButton('🤖 Support', 'support')]
+    [Markup.callbackButton('🤖 Підтримка', 'support')]
   ]).extra());
 });
 

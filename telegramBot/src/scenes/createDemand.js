@@ -87,7 +87,7 @@ const createDemand = new WizardScene(
   async ctx => {
     await ctx.replyWithHTML(`💉`, Markup.removeKeyboard().extra());
     console.log(ctx.wizard.state);
-    await ctx.replyWithHTML(`🎉 Вітаю! 🎉 \nЗаявку створено! 💉`);
+    await ctx.replyWithHTML(`🎉 Вітаю! 🎉 \nЗаявку створено! 💉\nTисни /main для головного меню.`);
     bot.telegram.sendMessage(process.env.ADMIN, `
     Заявка від: ${ctx.from.first_name} ${ctx.from.last_name}
     Telegram ID: ${ctx.from.id}
