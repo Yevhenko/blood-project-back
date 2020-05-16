@@ -1,0 +1,26 @@
+version: '2'
+services:
+  nodejs:
+    image: node:12-alpine
+    build:
+      context: back/src/
+    container_name: back-blood
+    depends_on:
+      - dbmain
+    env_file:
+      - back/src/.env
+    ports:
+      - 3000:3000
+    command:  sh -c "./node_modules/sequelize-cli/lib/sequelize db:migrate && node index"
+
+  dbmain:
+    container_name: db-blood
+    image: postgres:9.6.2-alpine
+    environment:
+      POSTGRES_USER: process.env.DB_USER
+      POSTGRES_DB: process.env.DB_NAME
+      POSTGRES_PASSWORD:  process.env.DB_PSWD
+    ports:
+      - 54321:5432
+    volumes:
+      - ./back/src/db/data:/var/lib/postgresql/data
