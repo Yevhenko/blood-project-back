@@ -16,12 +16,14 @@ services:
   telegram:
     image: node:12-alpine
     build:
-      context: telegramBot/src/
+      context: telegramBot/
     container_name: blood-telegram
     depends_on:
       - dbmain
     env_file:
       - telegramBot/.env
+    ports:
+      - 4000:4000  
     command:  sh -c "node index"
 
   dbmain:

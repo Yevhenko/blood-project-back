@@ -10,7 +10,7 @@ const { createDemand } = require('./scenes/createDemand');
 // const { mainMenu } = require('./scenes/mainMenu');
 // const Extra = require('telegraf/extra')
 const Markup = require('telegraf/markup');
-const { getOneUser } = require('../../../back/src/controller/userHandler');
+// const { getOneUser } = require('../../../back/src/controller/userHandler');
 
 // const { User } = require('../../back/src/db/models/');
 
@@ -30,18 +30,26 @@ bot.telegram.getMe().then((bot_informations) => {
 });
 
 bot.start(ctx => {
-  const thisUser = await getOneUser(ctx.from.id);
-  console.log(thisUser);
+  // const thisUser = await getOneUser(ctx.from.id);
+  // console.log(thisUser);
   // check if there in DB any user with this telegramID
 
-  if (thisUser.id !== process.env.ADMIN) {
-    ctx.replyWithHTML(`Вітаю Вас, ${thisUser.first_name}! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
+  if (ctx.from.id !== process.env.ADMIN) {
+    ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
+    return;
   };
   // if (!(await db.User.findByTelegramId(ctx.update.message.from.id))) 
   // if (thisUser.id !== process.env.ADMIN) {
   //   ctx.replyWithHTML(`Вітаю Вас, ${thisUser.first_name}! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
   // };
   // ctx.reply(`Wellcome back ${user.first_name}, please choose:\n`, ctx.scene.enter(main_menu));
+});
+
+bot.help(async ctx => {
+  await ctx.replyWithMarkdown(
+    `Шановні! В будь-якій незрозумілій ситуації *ЗУПИНЯЙТЕ* бота та *ЗАПУСКАЙТЕ* його знову! 
+І, до речі, якщо помітили баг, то хутчіш пишіть сюди @aendrevv, або використовуйте команду /support, чи тисніть на 🤖 *Підтримка* у головному меню /main 😎`
+  );
 });
 
 bot.command('main', ctx => {
@@ -82,6 +90,14 @@ bot.action('support', async ctx => {
   }
 });
 
+bot.command('support', async ctx => {
+  try {
+    await ctx.reply('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
+  } catch (error) {
+    console.error();    
+  }
+});
+
 // bot.on('/start', Stage.enter('new_user'));
 
 
@@ -90,9 +106,15 @@ bot.on('message', async ctx => {
 });
 
 bot.action(/.+/, ctx => {
-  return ctx.answerCbQuery(`Oh, ${ctx.match[0]}! Great choice`)
+  return ctx.answerCbQuery(`Обрано ${ctx.match[0]}! Секундочку..`)
 });
 
-bot.launch();
 // Log
-console.info('⚙️ Bot is up and running ⚙️')
+console.info('⚙️ Bot is up and running ⚙️');
+
+// test
+// bot.launch();
+
+module.exports = {
+  launch: () => bot.launch(),
+};

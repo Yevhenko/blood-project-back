@@ -4,8 +4,8 @@ const WizardScene = require('telegraf/scenes/wizard');
 const validator = require('validator');
 const bot = require('../bot');
 const { fullNameValidator } = require('../helpers/fullNameValidator');
-const { setUser } = require('../../../back/src/controller/userHandler');
-const { User } = require('../../../back/src/db/models/');
+// const { setUser } = require('../../../back/src/controller/userHandler');
+// const { User } = require('../../../back/src/db/models/');
 
 
 // const Telegraf = require('telegraf');
