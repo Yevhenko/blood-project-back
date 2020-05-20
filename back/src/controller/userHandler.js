@@ -50,8 +50,15 @@ async function getOneUser(query) {
   }
 }
 
-async function updateUser(body, query) {
+async function updateUser(body, query, isTelegramData) {
   try {
+    let where;
+    if (!isTelegramData) {
+      where = { id: query.id };
+    } else {
+      where = { telegramId: isTelegramData.id };
+    }
+
     const updatedUser = await User.update(
       {
         fullName: body.fullName,
@@ -65,9 +72,7 @@ async function updateUser(body, query) {
         telegramId: body.telegramId,
       },
       {
-        where: {
-          id: query.id,
-        },
+        where: { where },
       },
     );
 

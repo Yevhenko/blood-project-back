@@ -1,6 +1,7 @@
+/* eslint-disable object-curly-newline */
 const express = require('express');
 
-const { setDemand, deleteDemand, updateDemand } = require('../controller');
+const { setDemand, getDemandsByFilter, deleteDemand, updateDemand } = require('../controller');
 const {
   setValidDemand,
   updateValidDemand,
@@ -26,14 +27,23 @@ demand.post('/demand', validateRequest(setValidDemand), async (req, res) => {
   }
 });
 
-// demand.get('/demand', async (req, res) => {
-//   try {
+demand.get('/demand', async (req, res) => {
+  try {
+    const { query } = req;
+    const demandBloodType = req.query.bloodType;
+    const demandRhesus = req.query.rhesus;
 
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('The user cannot be got');
-//   }
-// });
+    if (!demandBloodType && !demandRhesus) {
+      res.status(404).send('Not found');
+    }
+
+    const demands = await getDemandsByFilter(query);
+    res.send(demands);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('The demands cannot be got');
+  }
+});
 
 demand.put('/demand', validateRequest(updateValidDemand), async (req, res) => {
   try {

@@ -20,6 +20,19 @@ async function setDemand(body) {
   }
 }
 
+async function getDemandsByFilter(query) {
+  try {
+    const demands = await Demand.findAll({
+      where: { bloodType: query.bloodType, rhesus: query.rhesus },
+    });
+
+    return demands;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 async function updateDemand(body, query) {
   try {
     const updatedDemand = await Demand.update(
@@ -61,6 +74,7 @@ async function deleteDemand(query) {
 
 module.exports = {
   setDemand,
+  getDemandsByFilter,
   updateDemand,
   deleteDemand,
 };

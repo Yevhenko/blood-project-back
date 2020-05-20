@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const { User } = require('../db/models');
 const { strcmp } = require('./commonHandlers');
-const { setUser } = require('./userHandler');
+const { setUser, updateUser } = require('./userHandler');
 
 const config = require('../config');
 
@@ -29,12 +29,12 @@ async function makeLogin(fields) {
       throw new Error('Data is outdated');
     }
 
-    const user = await User.findOne({ where: { id: authData.id } });
+    const user = await User.findOne({ where: { telegramId: authData.id } });
 
     if (!user) {
       await setUser(authData);
     } else {
-      await User.update({ authData }, { where: { id: authData.id } });
+      await updateUser(authData, null, true);
     }
 
     const token = jwt.sign(authData, config.secret);
