@@ -29,15 +29,15 @@ async function makeLogin(fields) {
       throw new Error('Data is outdated');
     }
 
-    const user = await User.findOne({ where: { telegramId: authData.id } });
+    let user = await User.findOne({ where: { telegramId: authData.id } });
 
     if (!user) {
-      await setUser(authData);
+      user = await setUser(authData);
     } else {
-      await updateUser(authData, null, true);
+      user = await updateUser(authData, null, true);
     }
 
-    const token = jwt.sign(authData, config.secret);
+    const token = jwt.sign(user, config.secret);
 
     return { user: authData, token };
   } catch (error) {

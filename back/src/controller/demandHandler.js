@@ -1,7 +1,7 @@
 const { Demand } = require('../db/models');
 const { phoneNumber, rhesus } = require('./commonHandlers');
 
-async function setDemand(body) {
+async function setDemand(body, userId) {
   try {
     const demand = await Demand.create({
       fullName: body.fullName,
@@ -10,7 +10,7 @@ async function setDemand(body) {
       rhesus: await rhesus(body),
       locality: body.locality,
       reason: body.reason,
-      userId: body.userId,
+      userId,
     });
 
     return demand;

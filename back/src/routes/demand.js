@@ -12,13 +12,14 @@ const demand = express.Router();
 
 demand.post('/demand', validateRequest(setValidDemand), async (req, res) => {
   try {
+    const { id: userId } = req.context.user;
     const { body } = req;
 
     if (!body) {
       return res.status(404).send('Not found');
     }
 
-    const response = await setDemand(body);
+    const response = await setDemand(body, userId);
 
     return res.send(response);
   } catch (error) {

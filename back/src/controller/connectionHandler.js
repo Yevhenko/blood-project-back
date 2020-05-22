@@ -1,9 +1,9 @@
 const { Connection } = require('../db/models');
 
-async function setConnection(body) {
+async function setConnection(body, userId) {
   try {
     return await Connection.create({
-      userId: body.userId,
+      userId,
       demandId: body.demandId,
     });
   } catch (error) {
