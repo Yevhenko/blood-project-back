@@ -1,13 +1,12 @@
 /* eslint-disable object-curly-newline */
 const express = require('express');
 
-const { setUser, getUser, updateUser, getOneUser, deleteUser } = require('../controller');
+const { setUser, updateUser, getOneUser, deleteUser } = require('../controller');
 const { setValidUser, updateValidUser, validateRequest } = require('../validator/userValidator');
-const { auth } = require('../auth');
 
 const user = express.Router();
 
-user.post('/user', validateRequest(setValidUser), auth(), async (req, res) => {
+user.post('/user', validateRequest(setValidUser), async (req, res) => {
   try {
     const { body } = req;
 
@@ -27,11 +26,10 @@ user.post('/user', validateRequest(setValidUser), auth(), async (req, res) => {
 user.get('/user', async (req, res) => {
   try {
     const { query } = req;
-    const userId = parseInt(req.query.id, 10);
+    const userTelegramId = parseInt(req.query.telegramId, 10);
 
-    if (!userId) {
-      const userList = await getUser();
-      res.send(userList);
+    if (!userTelegramId) {
+      res.status(404).send('Not found!');
     } else {
       const oneUser = await getOneUser(query);
       res.send(oneUser);

@@ -14,6 +14,7 @@ async function rhesus(body) {
   switch (body.rhesus) {
     case '+':
       return 1;
+
     case '-':
       return 0;
 

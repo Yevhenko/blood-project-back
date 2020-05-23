@@ -1,24 +1,25 @@
 const express = require('express');
 
-const { auth } = require('../auth');
-
-const login = express.Router();
 const { makeLogin } = require('../controller');
 
-login.post('/login', auth(), async (req, res) => {
-  try {
-    const { fields, cookie } = req;
+const login = express.Router();
 
-    if (!fields) {
+login.post('/login', async (req, res) => {
+  try {
+    const { body } = req;
+    console.log('Body in login endpoint:', body);
+
+    if (!body) {
       return res.status(404).send('Not found');
     }
 
-    const response = await makeLogin(fields, cookie);
+    const { user, token } = await makeLogin(body);
+    res.cookie('tgUser', token);
 
-    return res.status(200).send(response);
+    return res.status(200).send(user);
   } catch (error) {
     console.error(error);
-    return res.status(500).send('Some troubles with login');
+    return res.status(500).send({ errorMessage: error.message || 'Something went wrong' });
   }
 });
 

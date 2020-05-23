@@ -22,25 +22,25 @@ async function setUser(body) {
   }
 }
 
-async function getUser() {
-  try {
-    const users = await User.findAll();
+// async function getUsers() {
+//   try {
+//     const users = await User.findAll();
 
-    return users.map((u) => ({
-      name: u.fullName,
-      email: u.email,
-      phone: u.phoneNumber,
-    }));
-  } catch (error) {
-    throw new Error(error);
-  }
-}
+//     return users.map((u) => ({
+//       name: u.fullName,
+//       email: u.email,
+//       phone: u.phoneNumber,
+//     }));
+//   } catch (error) {
+//     throw new Error(error);
+//   }
+// }
 
 async function getOneUser(query) {
   try {
-    const user = await User.findAll({
+    const user = await User.findOne({
       where: {
-        id: query.id,
+        telegramId: query.telegramId,
       },
     });
 
@@ -50,8 +50,15 @@ async function getOneUser(query) {
   }
 }
 
-async function updateUser(body, query) {
+async function updateUser(body, query, isTelegramData) {
   try {
+    let where;
+    if (!isTelegramData) {
+      where = { id: query.id };
+    } else {
+      where = { telegramId: isTelegramData.id };
+    }
+
     const updatedUser = await User.update(
       {
         fullName: body.fullName,
@@ -65,9 +72,7 @@ async function updateUser(body, query) {
         telegramId: body.telegramId,
       },
       {
-        where: {
-          id: query.id,
-        },
+        where: { where },
       },
     );
 
@@ -93,7 +98,6 @@ async function deleteUser(query) {
 
 module.exports = {
   setUser,
-  getUser,
   updateUser,
   getOneUser,
   deleteUser,

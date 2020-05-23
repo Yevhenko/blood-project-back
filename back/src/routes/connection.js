@@ -6,13 +6,14 @@ const connection = express.Router();
 
 connection.post('/connection', async (req, res) => {
   try {
+    const { id: userId } = req.context.user;
     const { body } = req;
 
     if (!body) {
       return res.status(400).send('Not found');
     }
 
-    const response = await setConnection(body);
+    const response = await setConnection(body, userId);
 
     return res.send(response);
   } catch (error) {
