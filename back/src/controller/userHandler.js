@@ -22,25 +22,25 @@ async function setUser(body) {
   }
 }
 
-async function getUsers() {
-  try {
-    const users = await User.findAll();
+// async function getUsers() {
+//   try {
+//     const users = await User.findAll();
 
-    return users.map((u) => ({
-      name: u.fullName,
-      email: u.email,
-      phone: u.phoneNumber,
-    }));
-  } catch (error) {
-    throw new Error(error);
-  }
-}
+//     return users.map((u) => ({
+//       name: u.fullName,
+//       email: u.email,
+//       phone: u.phoneNumber,
+//     }));
+//   } catch (error) {
+//     throw new Error(error);
+//   }
+// }
 
 async function getOneUser(query) {
   try {
-    const user = await User.findAll({
+    const user = await User.findOne({
       where: {
-        id: query.id,
+        telegramId: query.telegramId,
       },
     });
 
@@ -98,7 +98,6 @@ async function deleteUser(query) {
 
 module.exports = {
   setUser,
-  getUsers,
   updateUser,
   getOneUser,
   deleteUser,

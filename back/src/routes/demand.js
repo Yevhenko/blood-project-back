@@ -1,7 +1,12 @@
 /* eslint-disable object-curly-newline */
 const express = require('express');
 
-const { setDemand, getDemandsByFilter, deleteDemand, updateDemand } = require('../controller');
+const {
+  setDemandAndFilterForSending,
+  getDemandsByFilter,
+  deleteDemand,
+  updateDemand,
+} = require('../controller');
 const {
   setValidDemand,
   updateValidDemand,
@@ -19,7 +24,7 @@ demand.post('/demand', validateRequest(setValidDemand), async (req, res) => {
       return res.status(404).send('Not found');
     }
 
-    const response = await setDemand(body, userId);
+    const response = await setDemandAndFilterForSending(body, userId);
 
     return res.send(response);
   } catch (error) {
@@ -49,13 +54,14 @@ demand.get('/demand', async (req, res) => {
 demand.put('/demand', validateRequest(updateValidDemand), async (req, res) => {
   try {
     const { body, query } = req;
-    const userId = parseInt(req.query.id, 10);
+    const { id: userId } = req.context.user;
+    const idOfUser = parseInt(req.query.id, 10);
 
-    if (!userId) {
+    if (!idOfUser) {
       return res.status(404).send('Not found');
     }
 
-    await updateDemand(body, query);
+    await updateDemand(body, query, userId);
 
     return res.end('Demand updated!');
   } catch (error) {

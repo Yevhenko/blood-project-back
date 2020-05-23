@@ -1,18 +1,22 @@
 /* eslint-disable object-curly-newline */
-const { setUser, getUsers, updateUser, getOneUser, deleteUser } = require('./userHandler');
-const { setDemand, getDemandsByFilter, updateDemand, deleteDemand } = require('./demandHandler');
+const { setUser, updateUser, getOneUser, deleteUser } = require('./userHandler');
+const {
+  setDemandAndFilterForSending,
+  getDemandsByFilter,
+  updateDemand,
+  deleteDemand,
+} = require('./demandHandler');
 const { setConnection, deleteConnection } = require('./connectionHandler');
 const { makeLogin } = require('./loginHandler');
 
 module.exports = {
   setUser,
-  getUsers,
   updateUser,
   getOneUser,
   deleteUser,
   setConnection,
   deleteConnection,
-  setDemand,
+  setDemandAndFilterForSending,
   getDemandsByFilter,
   updateDemand,
   deleteDemand,

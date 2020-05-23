@@ -1,7 +1,7 @@
-const { Demand } = require('../db/models');
+const { Demand, User } = require('../db/models');
 const { phoneNumber, rhesus } = require('./commonHandlers');
 
-async function setDemand(body, userId) {
+async function setDemandAndFilterForSending(body, userId) {
   try {
     const demand = await Demand.create({
       fullName: body.fullName,
@@ -13,7 +13,11 @@ async function setDemand(body, userId) {
       userId,
     });
 
-    return demand;
+    const needableUsers = await User.findAll({
+      where: { bloodType: demand.bloodType, rhesus: demand.rhesus },
+    });
+
+    return needableUsers;
   } catch (error) {
     console.error(error);
     throw error;
@@ -26,14 +30,19 @@ async function getDemandsByFilter(query) {
       where: { bloodType: query.bloodType, rhesus: query.rhesus },
     });
 
-    return demands;
+    return demands.map((d) => ({
+      name: d.fullName,
+      phoneNumber: d.phoneNumber,
+      locality: d.locality,
+      reason: d.reason,
+    }));
   } catch (error) {
     console.error(error);
     throw error;
   }
 }
 
-async function updateDemand(body, query) {
+async function updateDemand(body, query, userId) {
   try {
     const updatedDemand = await Demand.update(
       {
@@ -43,7 +52,7 @@ async function updateDemand(body, query) {
         rhesus: await rhesus(body),
         locality: body.locality,
         reason: body.reason,
-        userId: body.userId,
+        userId,
       },
       {
         where: {
@@ -73,7 +82,7 @@ async function deleteDemand(query) {
 }
 
 module.exports = {
-  setDemand,
+  setDemandAndFilterForSending,
   getDemandsByFilter,
   updateDemand,
   deleteDemand,
