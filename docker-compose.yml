@@ -12,23 +12,12 @@ services:
     ports:
       - 3000:3000
     command:  sh -c "./node_modules/sequelize-cli/lib/sequelize db:migrate && node index"
-  
-  telegram:
-    image: node:12-alpine
-    build:
-      context: telegramBot/
-    container_name: blood-telegram
-    depends_on:
-      - dbmain
-    env_file:
-      - telegramBot/.env
-    ports:
-      - 4000:4000  
-    command:  sh -c "node index"
 
   dbmain:
     container_name: db-blood
     image: postgres:9.6.2-alpine
+    env_file:
+      - back/src/.env
     environment:
       POSTGRES_USER: process.env.DB_USER
       POSTGRES_DB: process.env.DB_NAME
@@ -37,3 +26,18 @@ services:
       - 54321:5432
     volumes:
       - ./back/src/db/data:/var/lib/postgresql/data
+
+  telegramBOT:
+    image: node:12-alpine
+    build:
+      context: telegramBot/
+    links:
+      - nodejs
+    container_name: telegram-blood
+    depends_on:
+      - nodejs
+    env_file:
+      - telegramBot/.env
+    ports:
+      - 4000:4000  
+    command:  sh -c "node index"

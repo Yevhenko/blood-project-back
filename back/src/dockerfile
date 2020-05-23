@@ -1,5 +1,5 @@
-FROM node:12-alpine
-WORKDIR /usr/src/app
+FROM node:12-alpine3.10
+WORKDIR /back/src
 COPY package.json ./
 COPY package-lock.json ./
 RUN npm install

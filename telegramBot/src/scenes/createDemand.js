@@ -2,7 +2,6 @@ require('dotenv').config();
 const Markup = require('telegraf/markup');
 const WizardScene = require('telegraf/scenes/wizard');
 const bot = require('../bot');
-const validator = require('validator');
 // const Telegraf = require('telegraf');
 
 

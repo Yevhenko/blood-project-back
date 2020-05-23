@@ -40,7 +40,7 @@ async function getOneUser(query) {
   try {
     const user = await User.findAll({
       where: {
-        id: query.id,
+        telegramId: query.telegramId,
       },
     });
 

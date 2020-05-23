@@ -1,7 +1,10 @@
 require('dotenv').config();
+
 const Markup = require('telegraf/markup');
 const WizardScene = require('telegraf/scenes/wizard');
 const validator = require('validator');
+const request = require('request-promise-native');
+
 const bot = require('../bot');
 const { fullNameValidator } = require('../helpers/fullNameValidator');
 // const { setUser } = require('../../../back/src/controller/userHandler');
@@ -66,6 +69,7 @@ const newUser = new WizardScene(
         ['3', '4'],
       ])
         .resize()
+        .removeKeyboard()
         .extra()
     );
     return ctx.wizard.next();
@@ -90,6 +94,7 @@ const newUser = new WizardScene(
       `Втомився!? Ніхто не обіцяв, що буде легко.\nОстаннє питання: Ваш резус-фактор?`,
       Markup.keyboard([['+', '-']])
         .resize()
+        .removeKeyboard()
         .extra()
     );
     return ctx.wizard.next();
@@ -134,6 +139,7 @@ const newUser = new WizardScene(
     Резус-фактор: ${ctx.wizard.state.rhesus}`,
       Markup.keyboard([Markup.button('✅ Все вірно!'), Markup.button('❌ Спочатку')])
         .resize()
+        .removeKeyboard()
         .extra(),
       { parse_mode: 'markdown' }
     );
@@ -156,17 +162,24 @@ const newUser = new WizardScene(
       email: ctx.wizard.state.email,
       bloodType: ctx.wizard.state.bloodType,
       rhesus: ctx.wizard.state.rhesus,
+      locality: null,
       telegramId: ctx.from.id,
     };
 
-    await setUser(user);
+    const response = await request({
+      method: "POST",
+      uri: 'http://localhost:3000/user',
+      json: true,
+      body: user,
+    });
+    console.log('RESPONSE FROM BACK:', response);
+    // await setUser(user);
     
-    await ctx.replyWithDice();
-    console.log(ctx.wizard.state);
     await ctx.replyWithHTML(
       `🎉 Вітаємо, ${ctx.wizard.state.name}! 🎉 \nВи стали учасником проекту! 💉\nTисни /main для головного меню.`,
       Markup.removeKeyboard().extra()
     );
+
     bot.telegram.sendMessage(
       process.env.ADMIN,
       `
