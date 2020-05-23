@@ -24,3 +24,18 @@ services:
       - 54321:5432
     volumes:
       - ./back/src/db/data:/var/lib/postgresql/data
+
+  telegramBOT:
+    image: node:12-alpine
+    build:
+      context: telegramBot/
+    links:
+      - nodejs
+    container_name: telegram-blood
+    depends_on:
+      - nodejs
+    env_file:
+      - telegramBot/.env
+    ports:
+      - 4000:4000  
+    command:  sh -c "node index"
