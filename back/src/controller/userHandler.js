@@ -22,20 +22,6 @@ async function setUser(body) {
   }
 }
 
-// async function getUsers() {
-//   try {
-//     const users = await User.findAll();
-
-//     return users.map((u) => ({
-//       name: u.fullName,
-//       email: u.email,
-//       phone: u.phoneNumber,
-//     }));
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// }
-
 async function getOneUser(query) {
   try {
     const user = await User.findOne({
