@@ -25,9 +25,9 @@ async function makeLogin(fields) {
       throw new Error('Data is NOT from Telegram');
     }
 
-    if (new Date().getTime() - authData.auth_date > 86400) {
-      throw new Error('Data is outdated');
-    }
+    // if (new Date().getTime() - authData.auth_date > 86400) {
+    //   throw new Error('Data is outdated');
+    // }
 
     let user = await User.findOne({ where: { telegramId: authData.id } });
 
@@ -37,7 +37,7 @@ async function makeLogin(fields) {
       user = await updateUser(authData, null, true);
     }
 
-    const token = jwt.sign(user, config.secret);
+    const token = jwt.sign(user.toJSON(), config.secret);
 
     return { user: authData, token };
   } catch (error) {
