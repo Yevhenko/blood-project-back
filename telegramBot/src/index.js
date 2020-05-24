@@ -32,10 +32,14 @@ bot.telegram.getMe().then((bot_informations) => {
 });
 
 bot.start(async ctx => {
+  console.log(':)');
   const currentUser = await request({
     method: "GET",
     uri: `http://localhost:3000/user?telegramId=${ctx.from.id}`,
     json: true,
+    headers: {
+      'Authorization': 'Bearer 666'
+    }
   });  
   console.log('RESPONSE FROM BACK:', currentUser);
 
@@ -101,8 +105,15 @@ bot.action('settings', async ctx => {
   }
 });
 
-bot.action('get_demands_list', (ctx, next) => {
-  return ctx.reply('⚠️ In Progress ⚠️').then(() => next());
+bot.action('get_demands_list', async (ctx, next) => {
+  // return ctx.reply('⚠️ In Progress ⚠️').then(() => next());
+  try {
+    await ctx.answerCbQuery();
+    await ctx.replyWithMarkdown(`список заявок`);
+    return next();
+  } catch (error) {
+    console.log(error.message);
+  }
 });
 
 bot.action('support', async ctx => {

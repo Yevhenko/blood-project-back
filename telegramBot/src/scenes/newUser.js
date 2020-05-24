@@ -41,7 +41,7 @@ const newUser = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx); // Manually trigger the listener with the current ctx
     }
-    ctx.reply(`🤦‍♂️ Такого email не існує! \nНе раджу гратися зі мною, друже!`);
+    ctx.reply(`🤦‍♂️ Такого email не існує!`);
     ctx.wizard.back(); // Set the listener to the previous function
     return ctx.wizard.steps[ctx.wizard.cursor](ctx); // Manually trigger the listener with the current ctx
   },
@@ -91,7 +91,7 @@ const newUser = new WizardScene(
     ctx.wizard.state.bloodType = ctx.message.text;
     console.log(ctx.wizard.state.bloodType);
     ctx.reply(
-      `Втомився!? Ніхто не обіцяв, що буде легко.\nОстаннє питання: Ваш резус-фактор?`,
+      `Останнє питання: Ваш резус-фактор?`,
       Markup.keyboard([['+', '-']])
         .resize()
         .removeKeyboard()
@@ -141,7 +141,6 @@ const newUser = new WizardScene(
         .resize()
         .removeKeyboard()
         .extra(),
-      { parse_mode: 'markdown' }
     );
     return ctx.wizard.next();
     // return ctx.wizard.steps[ctx.wizard.cursor](ctx);
