@@ -1,8 +1,8 @@
 require('dotenv').config();
 const Markup = require('telegraf/markup');
 const WizardScene = require('telegraf/scenes/wizard');
-const request = require('request-promise-native');
 const bot = require('../bot');
+const axios = require('axios');
 // const Telegraf = require('telegraf');
 
 // new user registrator five-step wizard
@@ -10,7 +10,7 @@ const createDemand = new WizardScene(
   'create_demand',
   
   async ctx => {
-    const currentUser = await request({
+    const currentUser = await axios({
       method: "GET",
       uri: `http://localhost:3000/user?telegramId=${ctx.from.id}`,
       json: true,

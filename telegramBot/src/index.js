@@ -1,5 +1,6 @@
 require('dotenv').config();
-const Telegraf = require('telegraf');
+
+const { getSecretKey } = require('./config');
 const { Stage } = require('telegraf');
 const session = require('telegraf/session');
 // const Router = require('telegraf/router');
@@ -7,7 +8,7 @@ const bot = require('./bot');
 // const telegram = require('telegraf/telegram');
 const { newUser } = require('./scenes/newUser');
 const { settings } = require('./scenes/settings');
-const request = require('request-promise-native');
+const axios = require('axios');
 
 
 const { createDemand } = require('./scenes/createDemand');
@@ -32,28 +33,32 @@ bot.telegram.getMe().then((bot_informations) => {
 });
 
 bot.start(async ctx => {
-  console.log(':)');
-  const currentUser = await request({
-    method: "GET",
-    uri: `http://localhost:3000/user?telegramId=${ctx.from.id}`,
-    json: true,
-    headers: {
-      'Authorization': 'Bearer 666'
-    }
-  });  
-  console.log('RESPONSE FROM BACK:', currentUser);
+  try {
+    console.log(':)');
+    const { data: currentUser } = await axios({
+      method: "GET",
+      url: `http://nodejs:3000/user?telegramId=${ctx.from.id}`,
+      headers: {
+        'Authorization': getSecretKey(),
+      }
+    });  
+    console.log('RESPONSE FROM BACK ggg:', currentUser);
 
-  if (!currentUser){
-    ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
-    return;
-  };
-  ctx.reply(`З поверненням, ${currentUser.fullName}!`, Markup.inlineKeyboard([
-    [Markup.callbackButton('🆕 Створити нову заявку', 'create_demand')],
-    [Markup.callbackButton('📋 Список усіх заявок', 'get_demands_list')],
-    [Markup.callbackButton('⚙️ Налаштування', 'settings'),
-    Markup.urlButton('💰 Donate', 'http://google.com')],
-    [Markup.callbackButton('🤖 Підтримка', 'support')]
-  ]).extra());
+    if (!currentUser){
+      ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
+      return;
+    };
+    ctx.reply(`З поверненням, ${currentUser.fullName}!`, Markup.inlineKeyboard([
+      [Markup.callbackButton('🆕 Створити нову заявку', 'create_demand')],
+      [Markup.callbackButton('📋 Список усіх заявок', 'get_demands_list')],
+      [Markup.callbackButton('⚙️ Налаштування', 'settings'),
+      Markup.urlButton('💰 Donate', 'http://google.com')],
+      [Markup.callbackButton('🤖 Підтримка', 'support')]
+    ]).extra());
+  } catch (error) {
+    console.error('bot start function error -', error);
+  }
+  
   
   // if (ctx.from.id != process.env.ADMIN) {
   //   ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));

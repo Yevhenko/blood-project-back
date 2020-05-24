@@ -1,10 +1,10 @@
 {
   "name": "blood-project-back",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "T",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NO_MIGRATIONS=1 nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -17,12 +17,12 @@
   },
   "homepage": "https://github.com/Yevhenko/blood-project-back#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "nodemon": "^2.0.4",
     "pg": "^7.18.2",
-    "request": "^2.88.2",
-    "request-promise-native": "^1.0.8",
     "sequelize": "^5.21.5",
     "sequelize-cli": "^5.5.1",
     "telegraf": "^3.38.0",

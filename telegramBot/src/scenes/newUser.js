@@ -3,7 +3,7 @@ require('dotenv').config();
 const Markup = require('telegraf/markup');
 const WizardScene = require('telegraf/scenes/wizard');
 const validator = require('validator');
-const request = require('request-promise-native');
+const axios = require('axios');
 
 const bot = require('../bot');
 const { fullNameValidator } = require('../helpers/fullNameValidator');
@@ -165,11 +165,11 @@ const newUser = new WizardScene(
       telegramId: ctx.from.id,
     };
 
-    const response = await request({
+    const response = await axios({
       method: "POST",
       uri: 'http://localhost:3000/user',
       json: true,
-      body: user,
+      data: user,
     });
     console.log('RESPONSE FROM BACK:', response);
     // await setUser(user);

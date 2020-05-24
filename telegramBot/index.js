@@ -1,13 +1,13 @@
 require('dotenv').config();
-const botApp = require('./src');
-
 const express = require('express');
 
-// const routes = require('../src/routes');
+const { initConfig, getPort } = require('./src/config');
+initConfig(process.env);
+const botApp = require('./src');
 
 const app = express();
 
-const port = process.env.PORT;
+const port = getPort();
 
 // app.use(routes); 
 app.get('/', (req, res) => {

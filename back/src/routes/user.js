@@ -32,7 +32,7 @@ user.get('/user', async (req, res) => {
       res.status(404).send('Not found!');
     } else {
       const oneUser = await getOneUser(query);
-      res.send(oneUser);
+      res.status(200).send(oneUser);
     }
   } catch (error) {
     console.error(error);
