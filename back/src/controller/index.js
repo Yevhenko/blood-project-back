@@ -1,5 +1,6 @@
 /* eslint-disable object-curly-newline */
-const { setUser, updateUser, getOneUser, deleteUser } = require('./userHandler');
+const { updateUser, getOneUser, deleteUser } = require('./userHandler');
+const { setUser } = require('./registrationHandler');
 const {
   setDemandAndFilterForSending,
   getDemandsByFilter,

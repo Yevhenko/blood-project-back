@@ -1,27 +1,10 @@
 /* eslint-disable object-curly-newline */
 const express = require('express');
 
-const { setUser, updateUser, getOneUser, deleteUser } = require('../controller');
-const { setValidUser, updateValidUser, validateRequest } = require('../validator/userValidator');
+const { updateUser, getOneUser, deleteUser } = require('../controller');
+const { updateValidUser, validateRequest } = require('../validator/userValidator');
 
 const user = express.Router();
-
-user.post('/user', validateRequest(setValidUser), async (req, res) => {
-  try {
-    const { body } = req;
-
-    if (!body) {
-      return res.status(404).send('Not found');
-    }
-
-    const response = await setUser(body);
-
-    return res.send(response);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send('The user cannot be set');
-  }
-});
 
 user.get('/user', async (req, res) => {
   try {
