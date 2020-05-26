@@ -5,12 +5,20 @@ const config = require('../config');
 const auth = express.Router();
 
 auth.all('*', async (req, res, next) => {
-  console.log('AUTH');
+  console.log('AUTH:', req.headers);
+  let token = req.headers.authorization;
+
+  if (token === config.telegramBotSecret) {
+    console.log('ttttt');
+    return next();
+  }
+  console.log('qqq');
+
   if (!req.cookies) {
     res.status(500).send('auth failed');
   }
 
-  const token = req.cookies.tgUser;
+  token = req.cookies.tgUser;
 
   if (token) {
     try {

@@ -1,12 +1,10 @@
 {
   "name": "blood-project-back",
   "version": "1.0.0",
-  "description": "Some description will be here soon :)",
-  "main": "index.js",
+  "description": "T",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./index.js",
-    "db:start": "./node_modules/sequelize-cli/lib/sequelize db:migrate"
+    "start": "NO_MIGRATIONS=1 nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -19,16 +17,17 @@
   },
   "homepage": "https://github.com/Yevhenko/blood-project-back#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
-    "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "google-libphonenumber": "^3.2.8",
-    "joi": "^14.3.1",
-    "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.4",
     "pg": "^7.18.2",
     "sequelize": "^5.21.5",
-    "sequelize-cli": "^5.5.1"
+    "sequelize-cli": "^5.5.1",
+    "telegraf": "^3.38.0",
+    "telegraf-session-local": "^1.0.2",
+    "validator": "^13.0.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
@@ -37,7 +36,6 @@
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-prettier": "^3.1.2",
-    "nodemon": "^2.0.3",
     "prettier": "^1.19.1"
   }
 }
