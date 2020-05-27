@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.use(login);
 router.use(registration);
-router.use(auth);
+// router.use(auth);
 router.use(user);
 router.use(demand);
 router.use(connection);

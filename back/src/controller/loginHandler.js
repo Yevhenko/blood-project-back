@@ -31,7 +31,7 @@ async function makeLogin(body) {
     const user = await User.findOne({ where: { telegramId: authData.telegramId } });
 
     if (!user) {
-      return { user: authData.telegramId, msg: 'User not found' };
+      return { user: authData.telegramId };
     }
 
     const token = jwt.sign(user.toJSON(), config.secret);
