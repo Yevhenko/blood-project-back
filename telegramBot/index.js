@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
   res.send('<b> T E S T  !</b>')
 })
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => console.log(`Bot is listening on port ${port}!`));
 
 function start() {
   botApp.launch();

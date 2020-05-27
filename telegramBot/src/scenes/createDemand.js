@@ -5,20 +5,30 @@ const bot = require('../bot');
 const axios = require('axios');
 // const Telegraf = require('telegraf');
 
+const { getAdmin, getSecretKey } = require('../config');
 // new user registrator five-step wizard
 const createDemand = new WizardScene(
   'create_demand',
   
   async ctx => {
-    const currentUser = await axios({
-      method: "GET",
-      uri: `http://localhost:3000/user?telegramId=${ctx.from.id}`,
-      json: true,
-    });
-    console.log('RESPONSE FROM BACK:', currentUser);
-    if (!currentUser){
-      return ctx.scene.leave();
-    };
+    try {
+      console.log(':)');
+      const { data: currentUser } = await axios({
+        method: "GET",
+        url: `http://nodejs:3000/user?telegramId=${ctx.from.id}`,
+        headers: {
+          'Authorization': getSecretKey(),
+        }
+      });  
+      console.log('>>> RESPONSE FROM BACK >>>:', currentUser);
+  
+      if (!currentUser){
+        ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
+        return;
+      };
+    } catch (error) {
+      console.error('bot start function error -', error);
+    }
   },
 
   ctx => {
@@ -101,8 +111,8 @@ const createDemand = new WizardScene(
     console.log(ctx.wizard.state);
 
     const demand = {
-      fullName: currebtUser.fullName,
-      phoneNumber: currebtUser.phoneNumber,
+      fullName: currentUser.fullName,
+      phoneNumber: currentUser.phoneNumber,
       bloodType: ctx.wizard.state.bloodType,
       rhesus: ctx.wizard.state.bloodType,
       reason: ctx.wizard.state.reason,
@@ -111,15 +121,16 @@ const createDemand = new WizardScene(
 
     const response = await request({
       method: "POST",
-      uri: 'http://localhost:3000/demand',
+      uri: 'http://nodejs:3000/demand',
       json: true,
-      body: demand,
+      headers: { 'Authorization': getSecretKey() },
+      data: demand,
     });
     console.log('RESPONSE FROM BACK:', response);
 
     await ctx.replyWithHTML(`🎉 Вітаю! 🎉 \nЗаявку створено! 💉\nTисни /main для головного меню.`);
     // Sending message to admin
-    bot.telegram.sendMessage(process.env.ADMIN, `
+    bot.telegram.sendMessage(getAdmin(), `
     Заявка від: ${ctx.from.first_name} ${ctx.from.last_name}
     Telegram ID: ${ctx.from.id}
     Група крові: ${ctx.wizard.state.bloodType}

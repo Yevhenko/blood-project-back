@@ -1,4 +1,6 @@
 require('dotenv').config();
+const { getAdmin, getSecretKey } = require('../config');
+const { ageCheck } = require('../helpers/ageChecker');
 
 const Markup = require('telegraf/markup');
 const WizardScene = require('telegraf/scenes/wizard');
@@ -57,6 +59,11 @@ const newUser = new WizardScene(
       ctx.wizard.back(); // Set the listener to the previous function
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }
+    if (ageCheck(ctx.wizard.state.dob) < 18) {
+      ctx.reply('🔞 MALOLETKA!');
+      return ctx.scene.leave();
+    }
+
     ctx.wizard.next();
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
@@ -91,7 +98,7 @@ const newUser = new WizardScene(
     ctx.wizard.state.bloodType = ctx.message.text;
     console.log(ctx.wizard.state.bloodType);
     ctx.reply(
-      `Останнє питання: Ваш резус-фактор?`,
+      `Ваш резус-фактор?`,
       Markup.keyboard([['+', '-']])
         .resize()
         .removeKeyboard()
@@ -167,9 +174,12 @@ const newUser = new WizardScene(
 
     const response = await axios({
       method: "POST",
-      uri: 'http://localhost:3000/user',
+      url: 'http://nodejs:3000/user',
       json: true,
-      data: user,
+      headers: {
+        'Authorization': getSecretKey(),
+      },
+      data: JSON.stringify(user),
     });
     console.log('RESPONSE FROM BACK:', response);
     // await setUser(user);
@@ -180,7 +190,7 @@ const newUser = new WizardScene(
     );
 
     bot.telegram.sendMessage(
-      process.env.ADMIN,
+      getAdmin(),
       `
     Ім'я: ${ctx.wizard.state.name}
     Телефон: ${ctx.wizard.state.phone}
