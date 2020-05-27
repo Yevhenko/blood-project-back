@@ -16,7 +16,7 @@ login.post('/login', async (req, res) => {
     const { user, token } = await makeLogin(body);
     res.cookie('tgUser', token);
 
-    return res.status(200).send(user);
+    return res.status(200).send(user.toString());
   } catch (error) {
     console.error(error);
     return res.status(500).send({ errorMessage: error.message || 'Something went wrong' });
