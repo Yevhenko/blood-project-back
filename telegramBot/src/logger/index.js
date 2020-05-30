@@ -1,11 +1,11 @@
 // LOGGER
 const pino = require('pino');
 
-const logger = fileName => {
+const logger = (fileName = '', conf = { base: null }) => {
   let name = fileName;
 
   if (name) {
-    name = fileName.replace(/.+\/src/, '').replace(/.js$/, '');
+    name = fileName.replace(/.js$/, '');
   };
 
   const config = {
@@ -20,11 +20,9 @@ const logger = fileName => {
     levelFirst: true,
   };
 
-  const pinoOptions = Object.assign({}, { base: null }, config, { base: '', name, prettyPrint });
+  const options = Object.assign({}, conf, config, { name, prettyPrint });
 
-  return pino(pinoOptions);
+  return pino(options);
 };
 
-module.exports = {
-  logger,
-};
+module.exports = { logger };

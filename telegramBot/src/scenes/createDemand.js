@@ -25,11 +25,16 @@ const createDemand = new WizardScene(
         }
       });  
       log.info('>>> RESPONSE FROM BACK >>>:', currentUser);
+      console.log('rrr:', currentUser);
   
       if (!currentUser){
         ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
         return;
       };
+
+      ctx.wizard.state.currentUser = currentUser;
+      ctx.wizard.next();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     } catch (error) {
       log.error('bot start function error -', error);
     }
@@ -115,22 +120,23 @@ const createDemand = new WizardScene(
     log.info(ctx.wizard.state);
 
     const demand = {
-      fullName: currentUser.fullName,
-      phoneNumber: currentUser.phoneNumber,
+      fullName: ctx.wizard.state.currentUser.fullName,
+      phoneNumber: ctx.wizard.state.currentUser.phoneNumber,
       bloodType: ctx.wizard.state.bloodType,
       rhesus: ctx.wizard.state.bloodType,
       reason: ctx.wizard.state.reason,
-      userId: currentUser.userid,
+      userId: ctx.wizard.state.currentUser.userid,
     }
+    log.info(demand);
 
-    const response = await request({
+    const response = await axios({
       method: "POST",
       uri: 'http://nodejs:3000/demand',
       json: true,
       headers: { 'Authorization': getSecretKey() },
       data: demand,
     });
-    log.info('RESPONSE FROM BACK:', response);
+    log.info('RESPONSE FROM BACK:', response.data);
 
     await ctx.replyWithHTML(`🎉 Вітаю! 🎉 \nЗаявку створено! 💉\nTисни /main для головного меню.`);
     // Sending message to admin

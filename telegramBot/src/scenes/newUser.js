@@ -162,7 +162,8 @@ const newUser = new WizardScene(
       `Перевірте Ваші дані:
     Ім'я: ${ctx.wizard.state.name}
     Телефон: ${ctx.wizard.state.phone}
-    Дата народження: ${ctx.wizard.state.dob}
+    Дата народження: ${ctx.wizard.state.dob}    
+    Місто(село): ${ctx.wizard.state.locality}
     Ел.пошта: ${ctx.wizard.state.email}
     Група крові: ${ctx.wizard.state.bloodType}
     Резус-фактор: ${ctx.wizard.state.rhesus}`,
@@ -217,7 +218,7 @@ const newUser = new WizardScene(
     Ім'я: ${ctx.wizard.state.name}
     Телефон: ${ctx.wizard.state.phone}
     Дата народження: ${ctx.wizard.state.dob}
-    Місто(село): ${ctx.wizard.state.location}
+    Місто(село): ${ctx.wizard.state.locality}
     Ел.пошта: ${ctx.wizard.state.email}
     Група крові: ${ctx.wizard.state.bloodType}
     Резус-фактор: ${ctx.wizard.state.rhesus}`
