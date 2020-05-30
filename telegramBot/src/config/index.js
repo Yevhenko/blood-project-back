@@ -16,7 +16,6 @@ const initConfig = options => {
 };
 
 const getBotToken = () =>{
-  console.log('BOT CONFIG:', telegramConfig);
   if (!telegramConfig.botToken) throw 'botToken not found';
 
   return telegramConfig.botToken;

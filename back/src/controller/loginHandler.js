@@ -8,14 +8,17 @@ const config = require('../config');
 
 async function makeLogin(body) {
   try {
-    const { hash: checkHash, ...authData } = body;
-    const dataCheck = [];
+    const authData = body;
+    const checkHash = authData.hash;
+    delete authData.hash;
+    let dataCheck = [];
 
     Object.keys(authData).forEach((key) => {
       dataCheck.push(`${key}=${authData[key]}`);
     });
 
-    dataCheck.sort().join('\n');
+    dataCheck = dataCheck.sort().join('\n');
+    console.log('dataCheck:', dataCheck);
 
     const secretKey = crypto.createHash('sha256').update(config.botToken);
     const hash = crypto.createHmac('sha256', dataCheck.toString(), secretKey);

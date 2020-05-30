@@ -24,6 +24,7 @@ async function rhesus(body) {
 }
 
 function strcmp(a, b) {
+  // (a<b?-1:(a>b?1:0))
   if (a < b) return -1;
 
   if (a > b) return 1;
