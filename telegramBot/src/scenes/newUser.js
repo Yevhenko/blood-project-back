@@ -18,19 +18,51 @@ const { fullNameValidator } = require('../helpers/fullNameValidator');
 // new user registrator five-step wizard
 const newUser = new WizardScene(
   'new_user',
+  async ctx => {
+    // experimental
+    await ctx.reply('Давайте знайомитися! Як Вас звати?\n(<i>лише українською</i> 🇺🇦)\n\n Або натисни кнопку нижче 📱', {
+      reply_markup: {
+        keyboard: [[{ text: '📲 Використати дані з Telegram', request_contact: true }]],
+        resize_keyboard: true,
+        one_time_keyboard: true,
+      },
+    });
+    return ctx.wizard.next();
+    // return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+  },
   ctx => {
-    ctx.replyWithHTML(`Давайте знайомитися! Як Вас звати?\n(<i>лише українською</i> 🇺🇦)`);
+    if (!ctx.message.contact) {
+      if (ctx.message.text.length > 1 && fullNameValidator(ctx.message.text)) {
+        ctx.wizard.state.name = ctx.message.text;
+        ctx.wizard.next();
+        return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
+      }
+      ctx.reply(`🤦‍♂️ Нема такого ім'я.`);
+      ctx.wizard.back(); 
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
+    } else {
+      ctx.wizard.state.name = `${ctx.message.contact.first_name} ${ctx.message.contact.last_name}`;
+      ctx.wizard.state.phone = ctx.message.contact.phone_number;
+      console.log(`ID: ${ctx.message.from.id} USERNAME: ${ctx.message.from.username}`, ctx.message.contact);
+      ctx.wizard.next();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
+    }
+    
+  },
+  ctx => {
+    ctx.reply(`Звідки Ви? `);
     return ctx.wizard.next();
   },
   ctx => {
-    if (ctx.message.text.length > 1 && fullNameValidator(ctx.message.text)) {
-      ctx.wizard.state.name = ctx.message.text;
+
+    if (ctx.message.text.length > 2 && fullNameValidator(ctx.message.text)) {
+      ctx.wizard.state.locality = ctx.message.text;
       ctx.wizard.next();
-      return ctx.wizard.steps[ctx.wizard.cursor](ctx); // Manually trigger the listener with the current ctx
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
     }
-    ctx.reply(`🤦‍♂️ Нема такого ім'я.`);
-    ctx.wizard.back(); // Set the listener to the previous function
-    return ctx.wizard.steps[ctx.wizard.cursor](ctx); // Manually trigger the listener with the current ctx
+    ctx.reply(`🤦‍♂️ Нема такого locality.`);
+    ctx.wizard.back(); 
+    return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   ctx => {
     ctx.reply(`Введіть, будь-ласка, email:`);
@@ -41,11 +73,11 @@ const newUser = new WizardScene(
     if (validator.isEmail(ctx.message.text)) {
       ctx.wizard.state.email = ctx.message.text;
       ctx.wizard.next();
-      return ctx.wizard.steps[ctx.wizard.cursor](ctx); // Manually trigger the listener with the current ctx
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
     }
     ctx.reply(`🤦‍♂️ Такого email не існує!`);
-    ctx.wizard.back(); // Set the listener to the previous function
-    return ctx.wizard.steps[ctx.wizard.cursor](ctx); // Manually trigger the listener with the current ctx
+    ctx.wizard.back(); 
+    return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
   },
   ctx => {
     ctx.reply(`🔞 Введіть, будь-ласка, дату Вашого народження:\n(у форматі: MM.DD.YYYY)`);
@@ -56,11 +88,11 @@ const newUser = new WizardScene(
     ctx.wizard.state.dob = validator.toDate(ctx.message.text);
     if (!ctx.wizard.state.dob) {
       ctx.reply(`Думаєш, це смішно?\nВ мене немає часу на ігри!`);
-      ctx.wizard.back(); // Set the listener to the previous function
+      ctx.wizard.back(); 
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }
     if (ageCheck(ctx.wizard.state.dob) < 18) {
-      ctx.reply('🔞 MALOLETKA!');
+      ctx.reply('🔞 Сервіс лише для повнолітніх. Чекаємо Вас знову!');
       return ctx.scene.leave();
     }
 
@@ -117,25 +149,11 @@ const newUser = new WizardScene(
   ctx => {
     ctx.wizard.state.rhesus = ctx.message.text;
     console.log(ctx.wizard.state.rhesus);
-    ctx.reply('Натисни кнопку нижче, щоб я дізнався номер твого мобільного 📱', {
-      reply_markup: {
-        keyboard: [[{ text: '📲 Поділитися контактом', request_contact: true }]],
-        resize_keyboard: true,
-      },
-    });
-    return ctx.wizard.next();
-  },
-  ctx => {
-    if (!ctx.message.contact) {
-      ctx.wizard.back();
-      return ctx.wizard.steps[ctx.wizard.cursor](ctx);
-    }
+
     ctx.wizard.next();
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   ctx => {
-    ctx.wizard.state.phone = ctx.message.contact.phone_number;
-
     ctx.reply(
       `Перевірте Ваші дані:
     Ім'я: ${ctx.wizard.state.name}
@@ -168,10 +186,10 @@ const newUser = new WizardScene(
       email: ctx.wizard.state.email,
       bloodType: ctx.wizard.state.bloodType,
       rhesus: ctx.wizard.state.rhesus,
-      locality: null,
+      locality: ctx.wizard.state.locality,
       telegramId: ctx.from.id,
     };
-
+    console.log('<< USER >>', user);
     const response = await axios({
       method: "POST",
       url: 'http://nodejs:3000/user',
@@ -179,9 +197,9 @@ const newUser = new WizardScene(
       headers: {
         'Authorization': getSecretKey(),
       },
-      data: JSON.stringify(user),
+      data: user,
     });
-    console.log('RESPONSE FROM BACK:', response);
+    console.log('NEW USER RESPONSE FROM BACK:', response.data);
     // await setUser(user);
     
     await ctx.replyWithHTML(

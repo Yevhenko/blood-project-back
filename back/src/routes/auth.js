@@ -9,7 +9,7 @@ auth.all('*', async (req, res, next) => {
   let token = req.headers.authorization;
 
   if (token === config.telegramBotSecret) {
-    console.log('ttttt');
+    console.log('token === config.telegramBotSecret');
     return next();
   }
   console.log('qqq');

@@ -42,7 +42,7 @@ bot.start(async ctx => {
         'Authorization': getSecretKey(),
       }
     });  
-    console.log('RESPONSE FROM BACK ggg:', currentUser);
+    console.log('index RESPONSE FROM BACK:', currentUser);
 
     if (!currentUser){
       ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
@@ -52,11 +52,11 @@ bot.start(async ctx => {
       [Markup.callbackButton('🆕 Створити нову заявку', 'create_demand')],
       [Markup.callbackButton('📋 Список усіх заявок', 'get_demands_list')],
       [Markup.callbackButton('⚙️ Налаштування', 'settings'),
-      Markup.urlButton('💰 Donate', 'http://google.com')],
+      Markup.urlButton('💰 Про проект', 'http://google.com')],
       [Markup.callbackButton('🤖 Підтримка', 'support')]
     ]).extra());
   } catch (error) {
-    console.error('bot start function error -', error);
+    console.error('bot START function error -', error);
   }
   
   
