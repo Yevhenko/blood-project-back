@@ -9,6 +9,10 @@ const axios = require('axios');
 
 const bot = require('../bot');
 const { fullNameValidator } = require('../helpers/fullNameValidator');
+
+const { logger } = require('../logger');
+const log = logger(__filename);
+
 // const { setUser } = require('../../../back/src/controller/userHandler');
 // const { User } = require('../../../back/src/db/models/');
 
@@ -20,7 +24,7 @@ const newUser = new WizardScene(
   'new_user',
   async ctx => {
     // experimental
-    await ctx.reply('Давайте знайомитися! Як Вас звати?\n(<i>лише українською</i> 🇺🇦)\n\n Або натисни кнопку нижче 📱', {
+    await ctx.replyWithHTML('Давайте знайомитися! Як Вас звати?\n(<i>лише українською</i> 🇺🇦)\n\n Або натисни кнопку нижче 📱', {
       reply_markup: {
         keyboard: [[{ text: '📲 Використати дані з Telegram', request_contact: true }]],
         resize_keyboard: true,
@@ -43,7 +47,7 @@ const newUser = new WizardScene(
     } else {
       ctx.wizard.state.name = `${ctx.message.contact.first_name} ${ctx.message.contact.last_name}`;
       ctx.wizard.state.phone = ctx.message.contact.phone_number;
-      console.log(`ID: ${ctx.message.from.id} USERNAME: ${ctx.message.from.username}`, ctx.message.contact);
+      log.info(`ID: ${ctx.message.from.id} USERNAME: ${ctx.message.from.username}`, ctx.message.contact);
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
     }
@@ -69,7 +73,7 @@ const newUser = new WizardScene(
     return ctx.wizard.next();
   },
   ctx => {
-    console.log(ctx.message.text);
+    log.info(ctx.message.text);
     if (validator.isEmail(ctx.message.text)) {
       ctx.wizard.state.email = ctx.message.text;
       ctx.wizard.next();
@@ -80,14 +84,14 @@ const newUser = new WizardScene(
     return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
   },
   ctx => {
-    ctx.reply(`🔞 Введіть, будь-ласка, дату Вашого народження:\n(у форматі: MM.DD.YYYY)`);
+    ctx.reply(`🔞 Введіть, будь-ласка, дату Вашого народження:\n(у форматі: YYYY.MM.DD)`);
     return ctx.wizard.next();
   },
   ctx => {
-    console.log(ctx.message.text);
+    log.info(ctx.message.text);
     ctx.wizard.state.dob = validator.toDate(ctx.message.text);
     if (!ctx.wizard.state.dob) {
-      ctx.reply(`Думаєш, це смішно?\nВ мене немає часу на ігри!`);
+      ctx.reply(`Введіть дату народження в форматі:\nYYYY.MM.DD`);
       ctx.wizard.back(); 
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }
@@ -100,7 +104,7 @@ const newUser = new WizardScene(
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   ctx => {
-    console.log(ctx.wizard.state.dob);
+    log.info(ctx.wizard.state.dob);
     ctx.reply(
       `Ну і найголовніше: \nяка у Вас група крові?`,
       Markup.keyboard([
@@ -128,7 +132,7 @@ const newUser = new WizardScene(
   },
   ctx => {
     ctx.wizard.state.bloodType = ctx.message.text;
-    console.log(ctx.wizard.state.bloodType);
+    log.info(ctx.wizard.state.bloodType);
     ctx.reply(
       `Ваш резус-фактор?`,
       Markup.keyboard([['+', '-']])
@@ -148,7 +152,7 @@ const newUser = new WizardScene(
   },
   ctx => {
     ctx.wizard.state.rhesus = ctx.message.text;
-    console.log(ctx.wizard.state.rhesus);
+    log.info(ctx.wizard.state.rhesus);
 
     ctx.wizard.next();
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
@@ -158,7 +162,8 @@ const newUser = new WizardScene(
       `Перевірте Ваші дані:
     Ім'я: ${ctx.wizard.state.name}
     Телефон: ${ctx.wizard.state.phone}
-    Дата народження: ${ctx.wizard.state.dob}
+    Дата народження: ${ctx.wizard.state.dob}    
+    Місто(село): ${ctx.wizard.state.locality}
     Ел.пошта: ${ctx.wizard.state.email}
     Група крові: ${ctx.wizard.state.bloodType}
     Резус-фактор: ${ctx.wizard.state.rhesus}`,
@@ -189,17 +194,17 @@ const newUser = new WizardScene(
       locality: ctx.wizard.state.locality,
       telegramId: ctx.from.id,
     };
-    console.log('<< USER >>', user);
+    log.info('<< USER >>', user);
     const response = await axios({
-      method: "POST",
-      url: 'http://nodejs:3000/user',
+      method: 'POST',
+      url: 'http://nodejs:3000/registration',
       json: true,
       headers: {
         'Authorization': getSecretKey(),
       },
       data: user,
     });
-    console.log('NEW USER RESPONSE FROM BACK:', response.data);
+    log.info('NEW USER RESPONSE FROM BACK:', response.data);
     // await setUser(user);
     
     await ctx.replyWithHTML(
@@ -213,6 +218,7 @@ const newUser = new WizardScene(
     Ім'я: ${ctx.wizard.state.name}
     Телефон: ${ctx.wizard.state.phone}
     Дата народження: ${ctx.wizard.state.dob}
+    Місто(село): ${ctx.wizard.state.locality}
     Ел.пошта: ${ctx.wizard.state.email}
     Група крові: ${ctx.wizard.state.bloodType}
     Резус-фактор: ${ctx.wizard.state.rhesus}`
