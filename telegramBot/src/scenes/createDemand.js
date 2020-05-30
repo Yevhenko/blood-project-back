@@ -7,7 +7,7 @@ const axios = require('axios');
 
 const { getAdmin, getSecretKey } = require('../config');
 
-const { logger } = require('./logger');
+const { logger } = require('../logger');
 const log = logger(__filename);
 
 // new user registrator five-step wizard

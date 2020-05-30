@@ -10,7 +10,7 @@ const axios = require('axios');
 const bot = require('../bot');
 const { fullNameValidator } = require('../helpers/fullNameValidator');
 
-const { logger } = require('./logger');
+const { logger } = require('../logger');
 const log = logger(__filename);
 
 // const { setUser } = require('../../../back/src/controller/userHandler');
@@ -24,7 +24,7 @@ const newUser = new WizardScene(
   'new_user',
   async ctx => {
     // experimental
-    await ctx.reply('Давайте знайомитися! Як Вас звати?\n(<i>лише українською</i> 🇺🇦)\n\n Або натисни кнопку нижче 📱', {
+    await ctx.replyWithHTML('Давайте знайомитися! Як Вас звати?\n(<i>лише українською</i> 🇺🇦)\n\n Або натисни кнопку нижче 📱', {
       reply_markup: {
         keyboard: [[{ text: '📲 Використати дані з Telegram', request_contact: true }]],
         resize_keyboard: true,
@@ -84,14 +84,14 @@ const newUser = new WizardScene(
     return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
   },
   ctx => {
-    ctx.reply(`🔞 Введіть, будь-ласка, дату Вашого народження:\n(у форматі: MM.DD.YYYY)`);
+    ctx.reply(`🔞 Введіть, будь-ласка, дату Вашого народження:\n(у форматі: YYYY.MM.DD)`);
     return ctx.wizard.next();
   },
   ctx => {
     log.info(ctx.message.text);
     ctx.wizard.state.dob = validator.toDate(ctx.message.text);
     if (!ctx.wizard.state.dob) {
-      ctx.reply(`Думаєш, це смішно?\nВ мене немає часу на ігри!`);
+      ctx.reply(`Введіть дату народження в форматі:\nYYYY.MM.DD`);
       ctx.wizard.back(); 
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }
@@ -195,8 +195,8 @@ const newUser = new WizardScene(
     };
     log.info('<< USER >>', user);
     const response = await axios({
-      method: "POST",
-      url: 'http://nodejs:3000/user',
+      method: 'POST',
+      url: 'http://nodejs:3000/registration',
       json: true,
       headers: {
         'Authorization': getSecretKey(),
@@ -217,6 +217,7 @@ const newUser = new WizardScene(
     Ім'я: ${ctx.wizard.state.name}
     Телефон: ${ctx.wizard.state.phone}
     Дата народження: ${ctx.wizard.state.dob}
+    Місто(село): ${ctx.wizard.state.location}
     Ел.пошта: ${ctx.wizard.state.email}
     Група крові: ${ctx.wizard.state.bloodType}
     Резус-фактор: ${ctx.wizard.state.rhesus}`
