@@ -10,6 +10,8 @@ const { newUser } = require('./scenes/newUser');
 const { settings } = require('./scenes/settings');
 const axios = require('axios');
 
+const { logger } = require('./logger');
+const log = logger(__filename);
 
 const { createDemand } = require('./scenes/createDemand');
 // const Extra = require('telegraf/extra')
@@ -29,12 +31,12 @@ bot.use(stage.middleware());
 
 bot.telegram.getMe().then((bot_informations) => {
   bot.options.username = bot_informations.username;
-  console.log("Server has initialized bot nickname. Nick: "+bot_informations.username);
+  log.info("Server has initialized bot nickname. Nick: "+bot_informations.username);
 });
 
 bot.start(async ctx => {
   try {
-    console.log(':)');
+    log.info(':)');
     const { data: currentUser } = await axios({
       method: "GET",
       url: `http://nodejs:3000/user?telegramId=${ctx.from.id}`,
@@ -42,7 +44,7 @@ bot.start(async ctx => {
         'Authorization': getSecretKey(),
       }
     });  
-    console.log('index RESPONSE FROM BACK:', currentUser);
+    log.info('index RESPONSE FROM BACK:', currentUser);
 
     if (!currentUser){
       ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
@@ -56,7 +58,7 @@ bot.start(async ctx => {
       [Markup.callbackButton('🤖 Підтримка', 'support')]
     ]).extra());
   } catch (error) {
-    console.error('bot START function error -', error);
+    log.error('bot START function error -', error);
   }
   
   
@@ -96,7 +98,7 @@ bot.action('create_demand', async ctx => {
     await ctx.scene.enter('create_demand');
     
   } catch (error) {
-    console.log(error.message);    
+    log.info(error.message);    
   }
 });
 bot.action('settings', async ctx => {
@@ -106,7 +108,7 @@ bot.action('settings', async ctx => {
     await ctx.scene.enter('settings');
     
   } catch (error) {
-    console.log(error.message);    
+    log.info(error.message);    
   }
 });
 
@@ -117,7 +119,7 @@ bot.action('get_demands_list', async (ctx, next) => {
     await ctx.replyWithMarkdown(`список заявок`);
     return next();
   } catch (error) {
-    console.log(error.message);
+    log.info(error.message);
   }
 });
 
@@ -125,7 +127,7 @@ bot.action('support', async ctx => {
   try {
     await ctx.reply('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
   } catch (error) {
-    console.error();    
+    log.error();    
   }
 });
 
@@ -133,7 +135,7 @@ bot.command('support', async ctx => {
   try {
     await ctx.reply('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
   } catch (error) {
-    console.error();    
+    log.error();    
   }
 });
 
@@ -149,7 +151,7 @@ bot.action(/.+/, ctx => {
 });
 
 // Log
-console.info('⚙️ Bot is up and running ⚙️');
+log.info('⚙️ Bot is up and running ⚙️');
 
 // test
 // bot.launch();

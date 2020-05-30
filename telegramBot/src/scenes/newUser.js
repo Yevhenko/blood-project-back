@@ -9,6 +9,10 @@ const axios = require('axios');
 
 const bot = require('../bot');
 const { fullNameValidator } = require('../helpers/fullNameValidator');
+
+const { logger } = require('./logger');
+const log = logger(__filename);
+
 // const { setUser } = require('../../../back/src/controller/userHandler');
 // const { User } = require('../../../back/src/db/models/');
 
@@ -43,7 +47,7 @@ const newUser = new WizardScene(
     } else {
       ctx.wizard.state.name = `${ctx.message.contact.first_name} ${ctx.message.contact.last_name}`;
       ctx.wizard.state.phone = ctx.message.contact.phone_number;
-      console.log(`ID: ${ctx.message.from.id} USERNAME: ${ctx.message.from.username}`, ctx.message.contact);
+      log.info(`ID: ${ctx.message.from.id} USERNAME: ${ctx.message.from.username}`, ctx.message.contact);
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
     }
@@ -69,7 +73,7 @@ const newUser = new WizardScene(
     return ctx.wizard.next();
   },
   ctx => {
-    console.log(ctx.message.text);
+    log.info(ctx.message.text);
     if (validator.isEmail(ctx.message.text)) {
       ctx.wizard.state.email = ctx.message.text;
       ctx.wizard.next();
@@ -84,7 +88,7 @@ const newUser = new WizardScene(
     return ctx.wizard.next();
   },
   ctx => {
-    console.log(ctx.message.text);
+    log.info(ctx.message.text);
     ctx.wizard.state.dob = validator.toDate(ctx.message.text);
     if (!ctx.wizard.state.dob) {
       ctx.reply(`Думаєш, це смішно?\nВ мене немає часу на ігри!`);
@@ -100,7 +104,7 @@ const newUser = new WizardScene(
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   ctx => {
-    console.log(ctx.wizard.state.dob);
+    log.info(ctx.wizard.state.dob);
     ctx.reply(
       `Ну і найголовніше: \nяка у Вас група крові?`,
       Markup.keyboard([
@@ -128,7 +132,7 @@ const newUser = new WizardScene(
   },
   ctx => {
     ctx.wizard.state.bloodType = ctx.message.text;
-    console.log(ctx.wizard.state.bloodType);
+    log.info(ctx.wizard.state.bloodType);
     ctx.reply(
       `Ваш резус-фактор?`,
       Markup.keyboard([['+', '-']])
@@ -148,7 +152,7 @@ const newUser = new WizardScene(
   },
   ctx => {
     ctx.wizard.state.rhesus = ctx.message.text;
-    console.log(ctx.wizard.state.rhesus);
+    log.info(ctx.wizard.state.rhesus);
 
     ctx.wizard.next();
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
@@ -189,7 +193,7 @@ const newUser = new WizardScene(
       locality: ctx.wizard.state.locality,
       telegramId: ctx.from.id,
     };
-    console.log('<< USER >>', user);
+    log.info('<< USER >>', user);
     const response = await axios({
       method: "POST",
       url: 'http://nodejs:3000/user',
@@ -199,7 +203,7 @@ const newUser = new WizardScene(
       },
       data: user,
     });
-    console.log('NEW USER RESPONSE FROM BACK:', response.data);
+    log.info('NEW USER RESPONSE FROM BACK:', response.data);
     // await setUser(user);
     
     await ctx.replyWithHTML(

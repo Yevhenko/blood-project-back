@@ -6,13 +6,17 @@ const axios = require('axios');
 // const Telegraf = require('telegraf');
 
 const { getAdmin, getSecretKey } = require('../config');
+
+const { logger } = require('./logger');
+const log = logger(__filename);
+
 // new user registrator five-step wizard
 const createDemand = new WizardScene(
   'create_demand',
   
   async ctx => {
     try {
-      console.log(':)');
+      log.info(':)');
       const { data: currentUser } = await axios({
         method: "GET",
         url: `http://nodejs:3000/user?telegramId=${ctx.from.id}`,
@@ -20,14 +24,14 @@ const createDemand = new WizardScene(
           'Authorization': getSecretKey(),
         }
       });  
-      console.log('>>> RESPONSE FROM BACK >>>:', currentUser);
+      log.info('>>> RESPONSE FROM BACK >>>:', currentUser);
   
       if (!currentUser){
         ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
         return;
       };
     } catch (error) {
-      console.error('bot start function error -', error);
+      log.error('bot start function error -', error);
     }
   },
 
@@ -57,7 +61,7 @@ const createDemand = new WizardScene(
   },
   ctx => {
     ctx.wizard.state.bloodType = ctx.message.text;
-    console.log(ctx.wizard.state.bloodType);
+    log.info(ctx.wizard.state.bloodType);
     ctx.reply(`А резус-фактор?`, Markup.keyboard([      
       [Markup.button('+'), Markup.button('-')]
     ]).resize().removeKeyboard().extra());
@@ -74,7 +78,7 @@ const createDemand = new WizardScene(
   },
   ctx => {  
     ctx.wizard.state.rhesus = ctx.message.text;
-    console.log(ctx.wizard.state.rhesus);
+    log.info(ctx.wizard.state.rhesus);
     ctx.reply('Розкажіть, будь-ласка, для чого Вам потрібна донорська кров, а також додаткову інформацію:', Markup.removeKeyboard().extra());
     return ctx.wizard.next();
     // return ctx.wizard.steps[ctx.wizard.cursor](ctx);
@@ -108,7 +112,7 @@ const createDemand = new WizardScene(
   },
   async ctx => {
     await ctx.replyWithHTML(`💉`, Markup.removeKeyboard().extra());
-    console.log(ctx.wizard.state);
+    log.info(ctx.wizard.state);
 
     const demand = {
       fullName: currentUser.fullName,
@@ -126,7 +130,7 @@ const createDemand = new WizardScene(
       headers: { 'Authorization': getSecretKey() },
       data: demand,
     });
-    console.log('RESPONSE FROM BACK:', response);
+    log.info('RESPONSE FROM BACK:', response);
 
     await ctx.replyWithHTML(`🎉 Вітаю! 🎉 \nЗаявку створено! 💉\nTисни /main для головного меню.`);
     // Sending message to admin
