@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 const PNF = require('google-libphonenumber').PhoneNumberFormat;
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 
@@ -23,13 +24,4 @@ async function rhesus(body) {
   }
 }
 
-function strcmp(a, b) {
-  // (a<b?-1:(a>b?1:0))
-  if (a < b) return -1;
-
-  if (a > b) return 1;
-
-  return 0;
-}
-
-module.exports = { strcmp, phoneNumber, rhesus };
+module.exports = { phoneNumber, rhesus };
