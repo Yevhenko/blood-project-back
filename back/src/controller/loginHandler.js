@@ -4,28 +4,31 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 const { User } = require('../db/models');
-const { strcmp } = require('./commonHandlers');
 
 const config = require('../config');
 
 async function makeLogin(body) {
   try {
-    const authData = body;
-    const checkHash = authData.hash;
-    delete authData.hash;
-    const dataCheck = [];
+    const { hash, ...authData } = body;
+    let dataCheck = [];
 
     for (const key in authData) {
       dataCheck.push(`${key}=${authData[key]}`);
     }
 
-    dataCheck.sort();
-    dataCheck.join('\n');
+    dataCheck = dataCheck.sort().join('\n');
 
-    const secretKey = crypto.createHash('sha256').update(config.botToken);
-    const hash = crypto.createHmac('sha256', dataCheck.toString(), secretKey);
+    const secretKey = crypto
+      .createHash('sha256')
+      .update(config.botToken)
+      .digest();
 
-    if (strcmp(hash, checkHash) === -1) {
+    const hmac = crypto
+      .createHmac('sha256', secretKey)
+      .update(dataCheck.toString())
+      .digest('hex');
+
+    if (hmac !== hash) {
       throw new Error('Data is NOT from Telegram');
     }
 
