@@ -17,13 +17,16 @@ const demand = express.Router();
 
 demand.post('/demand', validateRequest(setValidDemand), async (req, res) => {
   try {
+    console.log('🤬', req.body);
+    console.log('🤬 🤬 🤬', req.context);
+    console.log('🦷 🦷 🦷 🦷');
+    
     const { id: userId } = req.context.user;
     const { body } = req;
 
     if (!body) {
       return res.status(404).send('Not found');
     }
-
     const response = await setDemandAndFilterForSending(body, userId);
 
     return res.send(response);

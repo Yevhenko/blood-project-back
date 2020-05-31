@@ -15,6 +15,7 @@ login.post('/login', async (req, res) => {
 
     const { user, token } = await makeLogin(body);
     res.cookie('tgUser', token);
+    res.header['Authorization'] = token;
 
     return res.status(200).send(user.toString());
   } catch (error) {

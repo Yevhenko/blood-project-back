@@ -22,6 +22,4 @@ async function setUser(body) {
   }
 }
 
-module.exports = {
-  setUser,
-};
+module.exports = { setUser };

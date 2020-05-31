@@ -32,7 +32,6 @@ const newUser = new WizardScene(
       },
     });
     return ctx.wizard.next();
-    // return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   ctx => {
     if (!ctx.message.contact) {
@@ -54,7 +53,7 @@ const newUser = new WizardScene(
     
   },
   ctx => {
-    ctx.reply(`Звідки Ви? `);
+    ctx.reply(`⛳️ Звідки Ви? `);
     return ctx.wizard.next();
   },
   ctx => {
@@ -173,7 +172,6 @@ const newUser = new WizardScene(
         .extra(),
     );
     return ctx.wizard.next();
-    // return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   ctx => {
     if (ctx.message.text !== '✅ Все вірно!') {
@@ -194,7 +192,8 @@ const newUser = new WizardScene(
       locality: ctx.wizard.state.locality,
       telegramId: ctx.from.id,
     };
-    log.info('<< USER >>', user);
+    log.info(`USER >>> ${user}`);
+
     const response = await axios({
       method: 'POST',
       url: 'http://nodejs:3000/registration',
@@ -204,9 +203,10 @@ const newUser = new WizardScene(
       },
       data: user,
     });
-    log.info('NEW USER RESPONSE FROM BACK:', response.data);
-    // await setUser(user);
+
+    log.info(`NEW USER RESPONSE FROM BACK: ${response.data}`);
     
+
     await ctx.replyWithHTML(
       `🎉 Вітаємо, ${ctx.wizard.state.name}! 🎉 \nВи стали учасником проекту! 💉\nTисни /main для головного меню.`,
       Markup.removeKeyboard().extra()
@@ -223,9 +223,7 @@ const newUser = new WizardScene(
     Група крові: ${ctx.wizard.state.bloodType}
     Резус-фактор: ${ctx.wizard.state.rhesus}`
     );
-    //
-    // sharing ctx.wizard.state to DB with await
-    //
+
     return ctx.scene.leave();
   }
 );

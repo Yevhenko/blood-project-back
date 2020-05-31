@@ -9,10 +9,13 @@ auth.all('*', async (req, res, next) => {
   let token = req.headers.authorization;
 
   if (token === config.telegramBotSecret) {
-    console.log('token === config.telegramBotSecret');
+    req.context = {
+      user: {
+        id: parseInt(req.query.userId, 10),
+      },
+    };
     return next();
   }
-  console.log('qqq');
 
   if (!req.cookies) {
     res.status(500).send('auth failed');

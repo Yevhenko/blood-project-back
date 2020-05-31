@@ -16,7 +16,6 @@ const createDemand = new WizardScene(
   
   async ctx => {
     try {
-      log.info(':)');
       const { data: currentUser } = await axios({
         method: "GET",
         url: `http://nodejs:3000/user?telegramId=${ctx.from.id}`,
@@ -24,8 +23,8 @@ const createDemand = new WizardScene(
           'Authorization': getSecretKey(),
         }
       });  
-      log.info('>>> RESPONSE FROM BACK >>>:', currentUser);
-      console.log('rrr:', currentUser);
+      log.info(`🔶 RESPONSE FROM BACK >>>:`);
+      log.info(currentUser);
   
       if (!currentUser){
         ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
@@ -36,7 +35,7 @@ const createDemand = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     } catch (error) {
-      log.error('bot start function error -', error);
+      log.error('🔴 bot create_demand  error -', error);
     }
   },
 
@@ -49,9 +48,6 @@ const createDemand = new WizardScene(
     ctx.reply(`Почнемо з найголовнішого: \nкров якої групи Ви потребуєте?`, Markup.keyboard([
       ['1', '2'],
       ['3', '4']
-      
-      // [Markup.button('1'), Markup.button('2')],
-      // [Markup.button('3'), Markup.button('4'),]
     ]).oneTime().resize().extra());
     return ctx.wizard.next();
   },
@@ -77,6 +73,7 @@ const createDemand = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     } else {
+      ctx.reply('Лише + або - ', Markup.removeKeyboard().extra());
       ctx.wizard.back();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }
@@ -90,19 +87,23 @@ const createDemand = new WizardScene(
   },
   ctx => {
     ctx.wizard.state.reason = ctx.message.text;
+    log.info(ctx.wizard.state.reason);
 
     ctx.replyWithMarkdown(
-      `Перевірте Ваші дані:
+      `*Перевірте Ваші дані*:
 
     Група крові: ${ctx.wizard.state.bloodType}
     Резус-фактор: ${ctx.wizard.state.rhesus}
     Мета: ${ctx.wizard.state.reason}`,
-      Markup.keyboard([      
-        Markup.button('✅ Все вірно!'),
-        Markup.button('❌ Спочатку'),
-      ]).resize().removeKeyboard().extra(),
+    Markup.keyboard([      
+      Markup.button('✅ Все вірно!'),
+      Markup.button('❌ Спочатку'),
+    ])
+      .resize()
+      .removeKeyboard()
+      .extra(),
       { parse_mode: 'markdown' }
-      );
+    );
     return ctx.wizard.next();
     // return ctx.wizard.steps[ctx.wizard.cursor](ctx);
 
@@ -124,20 +125,23 @@ const createDemand = new WizardScene(
       phoneNumber: ctx.wizard.state.currentUser.phoneNumber,
       locality: ctx.wizard.state.currentUser.locality,
       bloodType: ctx.wizard.state.bloodType,
-      rhesus: ctx.wizard.state.bloodType,
+      rhesus: ctx.wizard.state.rhesus,
       reason: ctx.wizard.state.reason,
-      userId: ctx.from.id,
+      // id: ctx.wizard.state.currentUser.id,
     }
     log.info(demand);
 
     const response = await axios({
-      method: "POST",
-      url: 'http://nodejs:3000/demand',
+      method: 'POST',
+      url: `http://nodejs:3000/demand?userId=${ctx.wizard.state.currentUser.id}`,
       json: true,
       headers: { 'Authorization': getSecretKey() },
+      // context: { 'user': { 'id': ctx.wizard.state.currentUser.id } },
       data: demand,
+
     });
-    log.info('RESPONSE FROM BACK:', response.data);
+    log.info(` 🔵 CREATE DEMAND RESPONSE FROM BACK:`);
+    log.info(response.data);
 
     await ctx.replyWithHTML(`🎉 Вітаю! 🎉 \nЗаявку створено! 💉\nTисни /main для головного меню.`);
     

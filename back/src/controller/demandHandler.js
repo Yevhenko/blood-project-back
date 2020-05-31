@@ -30,9 +30,11 @@ async function getDemandsByFilter(query) {
       where: { bloodType: query.bloodType, rhesus: query.rhesus },
     });
 
-    return demands.map((d) => ({
+    return demands.map(d => ({
       name: d.fullName,
       phoneNumber: d.phoneNumber,
+      bloodType: d.bloodType,
+      rhesus: d.rhesus,
       locality: d.locality,
       reason: d.reason,
     }));
