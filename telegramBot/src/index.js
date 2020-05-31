@@ -1,39 +1,36 @@
 require('dotenv').config();
 
-const { getSecretKey } = require('./config');
+const { getSecretKey, getAdmin } = require('./config');
 const { Stage } = require('telegraf');
 const session = require('telegraf/session');
-// const Router = require('telegraf/router');
 const bot = require('./bot');
 // const telegram = require('telegraf/telegram');
-const { newUser } = require('./scenes/newUser');
 const { settings } = require('./scenes/settings');
 const axios = require('axios');
 
 const { logger } = require('./logger');
 const log = logger(__filename);
 
+const { newUser } = require('./scenes/newUser');
 const { createDemand } = require('./scenes/createDemand');
+const { getDemandsList } = require('./scenes/getDemandsList');
 // const Extra = require('telegraf/extra')
 const Markup = require('telegraf/markup');
-// const { getOneUser } = require('/back/src/controller/userHandler');
 
-// const { startRegistration, mainMenu } = require('./menu');
-
-const stage = new Stage([newUser, createDemand, settings]);
-
-// const currentUser = new User;
+const stage = new Stage([newUser, createDemand, getDemandsList, settings]);
 
 // bot.use(Telegraf.log());
 
 bot.use(session());
 bot.use(stage.middleware());
 
+// unknown magic
 bot.telegram.getMe().then((bot_informations) => {
   bot.options.username = bot_informations.username;
   log.info("Server has initialized bot nickname. Nick: "+bot_informations.username);
 });
 
+// start
 bot.start(async ctx => {
   try {
     log.info(':)');
@@ -54,8 +51,9 @@ bot.start(async ctx => {
       [Markup.callbackButton('🆕 Створити нову заявку', 'create_demand')],
       [Markup.callbackButton('📋 Список усіх заявок', 'get_demands_list')],
       [Markup.callbackButton('⚙️ Налаштування', 'settings'),
-      Markup.urlButton('💰 Про проект', 'http://google.com')],
-      [Markup.callbackButton('🤖 Підтримка', 'support')]
+      Markup.urlButton('💉 Про проект', `tg://user?id=${getAdmin()}`)],
+      [Markup.callbackButton('🤖 Підтримка', 'support')],
+      [Markup.callbackButton('🚪 Вийти', 'leave')]
     ]).extra());
   } catch (error) {
     log.error('bot START function error -', error);
@@ -81,12 +79,13 @@ bot.help(async ctx => {
 });
 
 bot.command('main', ctx => {
-  ctx.reply(`Натисни кнопочку знизу`, Markup.inlineKeyboard([
+  ctx.replyWithMarkdown(`*Головне меню*`, Markup.inlineKeyboard([
     [Markup.callbackButton('🆕 Створити нову заявку', 'create_demand')],
     [Markup.callbackButton('📋 Список усіх заявок', 'get_demands_list')],
     [Markup.callbackButton('⚙️ Налаштування', 'settings'),
-    Markup.urlButton('💰 Donate', 'http://google.com')],
-    [Markup.callbackButton('🤖 Підтримка', 'support')]
+    Markup.urlButton('💉 Про проект', `tg://user?id=${getAdmin()}`)],
+    [Markup.callbackButton('🤖 Підтримка', 'support')],
+    [Markup.callbackButton('🚪 Вийти', 'leave')]
   ]).extra());
 });
 
@@ -104,9 +103,8 @@ bot.action('create_demand', async ctx => {
 bot.action('settings', async ctx => {
   try {
     await ctx.answerCbQuery();
-
     await ctx.scene.enter('settings');
-    
+    return next();
   } catch (error) {
     log.info(error.message);    
   }
@@ -116,7 +114,7 @@ bot.action('get_demands_list', async (ctx, next) => {
   // return ctx.reply('⚠️ In Progress ⚠️').then(() => next());
   try {
     await ctx.answerCbQuery();
-    await ctx.replyWithMarkdown(`список заявок`);
+    await ctx.scene.enter('get_demands_list');
     return next();
   } catch (error) {
     log.info(error.message);
@@ -127,7 +125,7 @@ bot.action('support', async ctx => {
   try {
     await ctx.reply('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
   } catch (error) {
-    log.error();    
+    log.error(error.message);    
   }
 });
 
@@ -135,19 +133,37 @@ bot.command('support', async ctx => {
   try {
     await ctx.reply('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
   } catch (error) {
-    log.error();    
+    log.error(error.message);    
   }
 });
 
 // bot.on('/start', Stage.enter('new_user'));
+bot.command('leave', async ctx => {
+  try {
+    await ctx.leaveChat('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
+  } catch (error) {
+    log.error(error.message);    
+  }
+});
 
+bot.action('leave', async ctx => {
+  try {
+    await ctx.leaveChat('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
+  } catch (error) {
+    log.error(error.message);    
+  }
+});
 
 bot.on('message', async ctx => {
-  await ctx.forwardMessage(process.env.ADMIN)
+  try {
+    await ctx.forwardMessage(getAdmin());
+  } catch (error) {
+    log.error(error.message);    
+  }
 });
 
 bot.action(/.+/, ctx => {
-  return ctx.answerCbQuery(`Обрано ${ctx.match[0]}! Секундочку..`)
+  return ctx.answerCbQuery(`Обрано ${ctx.match[0]}! Секундочку..`);
 });
 
 // Log

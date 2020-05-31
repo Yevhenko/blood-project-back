@@ -122,16 +122,17 @@ const createDemand = new WizardScene(
     const demand = {
       fullName: ctx.wizard.state.currentUser.fullName,
       phoneNumber: ctx.wizard.state.currentUser.phoneNumber,
+      locality: ctx.wizard.state.currentUser.locality,
       bloodType: ctx.wizard.state.bloodType,
       rhesus: ctx.wizard.state.bloodType,
       reason: ctx.wizard.state.reason,
-      userId: ctx.wizard.state.currentUser.userid,
+      userId: ctx.from.id,
     }
     log.info(demand);
 
     const response = await axios({
       method: "POST",
-      uri: 'http://nodejs:3000/demand',
+      url: 'http://nodejs:3000/demand',
       json: true,
       headers: { 'Authorization': getSecretKey() },
       data: demand,
@@ -139,6 +140,7 @@ const createDemand = new WizardScene(
     log.info('RESPONSE FROM BACK:', response.data);
 
     await ctx.replyWithHTML(`🎉 Вітаю! 🎉 \nЗаявку створено! 💉\nTисни /main для головного меню.`);
+    
     // Sending message to admin
     bot.telegram.sendMessage(getAdmin(), `
     Заявка від: ${ctx.from.first_name} ${ctx.from.last_name}
