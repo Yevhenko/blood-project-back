@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable guard-for-in */
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
@@ -11,14 +13,14 @@ async function makeLogin(body) {
     const authData = body;
     const checkHash = authData.hash;
     delete authData.hash;
-    let dataCheck = [];
+    const dataCheck = [];
 
-    Object.keys(authData).forEach((key) => {
+    for (const key in authData) {
       dataCheck.push(`${key}=${authData[key]}`);
-    });
+    }
 
-    dataCheck = dataCheck.sort().join('\n');
-    console.log('dataCheck:', dataCheck);
+    dataCheck.sort();
+    dataCheck.join('\n');
 
     const secretKey = crypto.createHash('sha256').update(config.botToken);
     const hash = crypto.createHmac('sha256', dataCheck.toString(), secretKey);
@@ -27,9 +29,9 @@ async function makeLogin(body) {
       throw new Error('Data is NOT from Telegram');
     }
 
-    // if (new Date().getTime() - authData.auth_date > 86400) {
-    //   throw new Error('Data is outdated');
-    // }
+    if (new Date().getTime() - authData.auth_date * 1000 > 86400) {
+      throw new Error('Data is outdated');
+    }
 
     const user = await User.findOne({ where: { telegramId: authData.telegramId } });
 

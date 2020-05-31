@@ -18,7 +18,7 @@ auth.all('*', async (req, res, next) => {
     res.status(500).send('auth failed');
   }
 
-  token = req.cookies.tgUser;
+  token = req.cookies.tgUser || req.headers.authorization;
 
   if (token) {
     try {
