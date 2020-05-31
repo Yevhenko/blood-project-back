@@ -61,7 +61,6 @@ const updateValidDemand = Joi.object().keys({
     .min(1)
     .max(255)
     .required(),
-  userId: Joi.number().required(),
 });
 
 module.exports = { setValidDemand, updateValidDemand, validateRequest };
