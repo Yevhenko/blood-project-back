@@ -37,7 +37,6 @@ const setValidDemand = Joi.object().keys({
     .min(1)
     .max(255)
     .required(),
-  userId: Joi.number().required(),
 });
 
 const updateValidDemand = Joi.object().keys({
