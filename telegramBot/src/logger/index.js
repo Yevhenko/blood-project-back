@@ -5,7 +5,8 @@ const logger = (fileName = '', conf = { base: null }) => {
   let name = fileName;
 
   if (name) {
-    name = fileName.replace(/.js$/, '');
+    // name = fileName.replace(/.js$/, '');
+    name = fileName.split('/src');
   };
 
   const config = {
@@ -20,7 +21,7 @@ const logger = (fileName = '', conf = { base: null }) => {
     levelFirst: true,
   };
 
-  const options = Object.assign({}, conf, config, { name, prettyPrint });
+  const options = Object.assign(conf, config, { name: name[1], prettyPrint });
 
   return pino(options);
 };
