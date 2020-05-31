@@ -127,7 +127,6 @@ const createDemand = new WizardScene(
       bloodType: ctx.wizard.state.bloodType,
       rhesus: ctx.wizard.state.rhesus,
       reason: ctx.wizard.state.reason,
-      // id: ctx.wizard.state.currentUser.id,
     }
     log.info(demand);
 
@@ -136,10 +135,9 @@ const createDemand = new WizardScene(
       url: `http://nodejs:3000/demand?userId=${ctx.wizard.state.currentUser.id}`,
       json: true,
       headers: { 'Authorization': getSecretKey() },
-      // context: { 'user': { 'id': ctx.wizard.state.currentUser.id } },
       data: demand,
-
     });
+
     log.info(` 🔵 CREATE DEMAND RESPONSE FROM BACK:`);
     log.info(response.data);
 
@@ -153,11 +151,21 @@ const createDemand = new WizardScene(
     Резус-фактор: ${ctx.wizard.state.rhesus}
     Мета: ${ctx.wizard.state.reason}`,
     );
+
+    if (response.data && response.data.length) {
+      try {
+        response.data.forEach(u => {
+          await ctx.reply(u.telegramId, '🔴🔴🔴');
+        });
+      } catch (error) {
+        log.error('🔴 MAILING  error -', error);
+      }
+    
+    }
+
     // Scene exit
     return ctx.scene.leave();
   }
 );
 
-module.exports = {
-  createDemand,
-};
+module.exports = { createDemand };

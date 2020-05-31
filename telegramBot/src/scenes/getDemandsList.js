@@ -35,7 +35,7 @@ const getDemandsList = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     } catch (error) {
-      log.error('bot getDemandsList function error -', error);
+      log.error('🔴 getDemandsList function ERRROR -', error);
     }
   },
 
@@ -53,7 +53,7 @@ const getDemandsList = new WizardScene(
       log.info(demandsList);
 
       if (demandsList) {
-        log.info('demandsList is available');
+        log.info('🔻 demandsList is available');
         demandsList.forEach(async d => {
           const rhesus = d.rhesus ? '+' : '-';
           await ctx.replyWithMarkdown(`*Заявка від:* ${d.name}\n*Група крові:* ${d.bloodType}\n*Резус-фактор:* ${rhesus}\n*Мета:* ${d.reason}`);
