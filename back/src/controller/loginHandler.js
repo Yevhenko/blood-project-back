@@ -36,10 +36,10 @@ async function makeLogin(body) {
       throw new Error('Data is outdated');
     }
 
-    const user = await User.findOne({ where: { telegramId: authData.telegramId } });
+    const user = await User.findOne({ where: { telegramId: authData.id } });
 
     if (!user) {
-      return { user: authData.telegramId };
+      return { user: authData.id };
     }
 
     const token = jwt.sign(user.toJSON(), config.secret);
