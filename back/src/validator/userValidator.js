@@ -21,7 +21,9 @@ const setValidUser = Joi.object().keys({
     .min(1)
     .max(255)
     .required(),
-  dateOfBirth: Joi.date().required(),
+  dateOfBirth: Joi.date()
+    .iso()
+    .required(),
   phoneNumber: Joi.string()
     .min(9)
     .max(20)
@@ -37,7 +39,7 @@ const setValidUser = Joi.object().keys({
     .min(1)
     .max(255)
     .required(),
-  lastBeingDonor: Joi.date(),
+  lastBeingDonor: Joi.date().iso(),
   telegramId: Joi.number().required(),
 });
 
@@ -46,7 +48,9 @@ const updateValidUser = Joi.object().keys({
     .min(1)
     .max(255)
     .required(),
-  dateOfBirth: Joi.date().required(),
+  dateOfBirth: Joi.date()
+    .iso()
+    .required(),
   phoneNumber: Joi.string()
     .min(9)
     .max(20)
@@ -62,7 +66,7 @@ const updateValidUser = Joi.object().keys({
     .min(1)
     .max(255)
     .required(),
-  lastBeingDonor: Joi.date(),
+  lastBeingDonor: Joi.date().iso(),
   telegramId: Joi.number().required(),
 });
 
