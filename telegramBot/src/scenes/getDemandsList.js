@@ -5,7 +5,7 @@ const axios = require('axios');
 
 // const Telegraf = require('telegraf');
 
-const { getAdmin, getSecretKey } = require('../config');
+const { getSecretKey } = require('../config');
 
 const { logger } = require('../logger');
 const log = logger(__filename);
@@ -35,7 +35,7 @@ const getDemandsList = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     } catch (error) {
-      log.error('bot getDemandsList function error -', error);
+      log.error('🔴 getDemandsList function ERRROR -', error);
     }
   },
 
@@ -53,17 +53,13 @@ const getDemandsList = new WizardScene(
       log.info(demandsList);
 
       if (demandsList) {
-        log.info('demandsList is available');
         demandsList.forEach(async d => {
           const rhesus = d.rhesus ? '+' : '-';
-          await ctx.replyWithMarkdown(`*Заявка від:* ${d.name}\n*Група крові:* ${d.bloodType}\n*Резус-фактор:* ${rhesus}\n*Мета:* ${d.reason}`);
+          await ctx.replyWithMarkdown(`*Заявка від:* ${d.name}\n*Група крові:* ${d.bloodType}\n*Резус-фактор:* ${rhesus}\n*Мета:* ${d.reason}\n*Телефон*${d.phoneNumber}`);
         });
       }
-  
-      await ctx.reply(getAdmin(),`⭐️ ${ctx.wizard.state.currentUser}`);
     } catch (error) {
-      log.error(`bot GET DEMANDS LIST error -> ${error.message}`);
-      log.error(error);
+      log.error(`🤖 GET DEMANDS LIST error -> ${error.message}`);
     }
     // Scene exit
     return ctx.scene.leave();

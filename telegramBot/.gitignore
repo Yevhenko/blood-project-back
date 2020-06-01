@@ -1,4 +1,7 @@
-telegramBot/src/config
+# Customs
+telegramBot/src/config/
+telegramBot/src/middlewares/
+
 # Logs
 logs
 *.log

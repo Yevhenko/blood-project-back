@@ -9,12 +9,14 @@ const { getAdmin, getSecretKey } = require('../config');
 const { logger } = require('../logger');
 const log = logger(__filename);
 
+log.info(`🔻🔻🔻`);
+
+
+
 // * * * * * * * * * * * * * * * *
 // 
 // SOME CODE WILL BE HERE A.S.A.P
 // 
 // * * * * * * * * * * * * * * * *
 
-module.exports = {
-  mailingAgent,
-};
+module.exports = { mailingAgent };

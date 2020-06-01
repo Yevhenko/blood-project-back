@@ -16,8 +16,7 @@ const {
 const demand = express.Router();
 
 demand.post('/demand', validateRequest(setValidDemand), async (req, res) => {
-  try {
-
+  try {    
     const { id: userId } = req.context.user;
     const { body } = req;
 
