@@ -27,7 +27,7 @@ bot.use(stage.middleware());
 bot.telegram.getMe().then(bot_informations => {
   log.info(bot_informations);
   bot.options.username = bot_informations.username;
-  log.info(bot.options);
+  log.info(`${bot.options.username}`);
 }).catch(e => log.error(e));
 
 // start
@@ -75,8 +75,8 @@ bot.command('main', ctx => {
     [Markup.callbackButton('📋 Список усіх заявок', 'get_demands_list')],
     [Markup.callbackButton('⚙️ Налаштування', 'settings'),
     Markup.urlButton('💉 Про проект', `https://github.com/Yevhenko/blood-project-back`)],
-    [Markup.callbackButton('🤖 Підтримка', 'support')],
-    [Markup.callbackButton('🚪 Вийти', 'leave')]
+    [Markup.callbackButton('🤖 Підтримка', 'support'),
+    Markup.callbackButton('🚪 Вийти', 'leave')]
   ]).extra());
 });
 
@@ -136,7 +136,7 @@ bot.command('leave', async ctx => {
 
 bot.action('leave', async ctx => {
   try {
-    await ctx.leaveChat();
+    await ctx.telegram.kickChatMember(ctx.chat.id, +ctx.from.id, new Date().getTime() + 45 * 1000);
   } catch (error) {
     log.error(error.message);    
   }
@@ -151,7 +151,7 @@ bot.on('message', async ctx => {
 });
 
 bot.action(/.+/, ctx => {
-  return ctx.answerCbQuery(`Обрано ${ctx.match[0]}! Секундочку..`);
+  return ctx.answerCbQuery(`${ctx.match[0]}...`);
 });
 
 log.info('🤖 Bot is up and running!');

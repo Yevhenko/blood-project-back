@@ -117,9 +117,6 @@ const createDemand = new WizardScene(
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   async ctx => {
-    await ctx.replyWithHTML(`💉`, Markup.removeKeyboard().extra());
-    log.info(ctx.wizard.state);
-
     const demand = {
       fullName: ctx.wizard.state.currentUser.fullName,
       phoneNumber: ctx.wizard.state.currentUser.phoneNumber,
@@ -128,6 +125,7 @@ const createDemand = new WizardScene(
       rhesus: ctx.wizard.state.rhesus,
       reason: ctx.wizard.state.reason,
     }
+    log.info('💎');
     log.info(demand);
 
     const response = await axios({
@@ -140,13 +138,13 @@ const createDemand = new WizardScene(
 
     log.info(` 🔵 CREATE DEMAND RESPONSE FROM BACK:`);
     log.info(response.data);
-
-    await ctx.replyWithHTML(`🎉 Вітаю! 🎉 \nЗаявку створено! 💉\nTисни /main для головного меню.`);
+    log.info('🔴🔴🔴');
+    await ctx.replyWithHTML(`Заявку створено! 💉\nTисни /main для головного меню.`, Markup.removeKeyboard().extra());
     
     // Sending message to admin
-    bot.telegram.sendMessage(getAdmin(), `
+    bot.telegram.sendMessage(getAdmin(), `⚠️⚠️⚠️
     Заявка від: ${ctx.from.first_name} ${ctx.from.last_name}
-    Telegram ID: ${ctx.from.id}
+    Telegram: ${ctx.from.username}
     Група крові: ${ctx.wizard.state.bloodType}
     Резус-фактор: ${ctx.wizard.state.rhesus}
     Мета: ${ctx.wizard.state.reason}`,
@@ -154,8 +152,16 @@ const createDemand = new WizardScene(
 
     if (response.data && response.data.length) {
       try {
-        response.data.forEach(u => {
-          await ctx.reply(u.telegramId, '🔴🔴🔴');
+        response.data.forEach(async u => {
+          await bot.telegram.sendMessage(u.telegramId, 
+          `🆕
+          Заявка від: @${ctx.from.username}
+        Група крові: ${ctx.wizard.state.bloodType}
+        Резус-фактор: ${ctx.wizard.state.rhesus}
+        Місто: ${ctx.wizard.state.currentUser.locality}
+        Мета: ${ctx.wizard.state.reason}
+        Телефон: ${ctx.wizard.state.currentUser.phoneNumber}
+          `);
         });
       } catch (error) {
         log.error('🔴 MAILING  error -', error);
