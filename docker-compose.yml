@@ -29,7 +29,7 @@ services:
       - ./back/src/db/data:/var/lib/postgresql/data
     networks:
       - blood_network
-      restart: always
+    restart: always
 
   telegram_bot:
     container_name: telegram-blood
