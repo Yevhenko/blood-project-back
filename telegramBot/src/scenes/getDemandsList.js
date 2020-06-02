@@ -2,6 +2,7 @@ const Markup = require('telegraf/markup');
 const WizardScene = require('telegraf/scenes/wizard');
 const bot = require('../bot');
 const axios = require('axios');
+const Composer = require('telegraf/composer')
 
 // const Telegraf = require('telegraf');
 
@@ -44,24 +45,21 @@ const getDemandsList = new WizardScene(
       const { data: demandsList } = await axios({
         method: 'GET',
         url: `http://nodejs:3000/demand?userId=${ctx.wizard.state.currentUser.id}&bloodType=${ctx.wizard.state.currentUser.bloodType}&rhesus=${ctx.wizard.state.currentUser.rhesus}`,
-        headers: {
-          'Authorization': getSecretKey(),
-        }
+        headers: { 'Authorization': getSecretKey() }
       });
   
-      log.info(`⭐️ GET DEMANDS LIST:`);
       log.info(demandsList);
 
       if (demandsList) {
         demandsList.forEach(async d => {
           const rhesus = d.rhesus ? '+' : '-';
-          await ctx.replyWithMarkdown(`*Заявка від:* ${d.name}\n*Група крові:* ${d.bloodType}\n*Резус-фактор:* ${rhesus}\n*Мета:* ${d.reason}\n*Телефон*${d.phoneNumber}`);
+          await ctx.replyWithMarkdown(`*Заявка від:* ${d.name}\n*Група крові:* ${d.bloodType}\n*Резус-фактор:* ${rhesus}\n*Мета:* ${d.reason}\n\n*Телефон* ${d.phoneNumber}`);
         });
       }
     } catch (error) {
       log.error(`🤖 GET DEMANDS LIST error -> ${error.message}`);
     }
-    // Scene exit
+
     return ctx.scene.leave();
   }
 );

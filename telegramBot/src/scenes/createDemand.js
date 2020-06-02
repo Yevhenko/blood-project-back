@@ -3,6 +3,7 @@ const Markup = require('telegraf/markup');
 const WizardScene = require('telegraf/scenes/wizard');
 const bot = require('../bot');
 const axios = require('axios');
+// const { mailingAgent } = require('../helpers/mailingAgent');
 // const Telegraf = require('telegraf');
 
 const { getAdmin, getSecretKey } = require('../config');
@@ -39,13 +40,13 @@ const createDemand = new WizardScene(
     }
   },
 
-  ctx => {
-    ctx.reply(`Ви вирішили створити нову заявку на донорську кров, я Вам із цим допоможу.`);
+  async ctx => {
+    await ctx.reply(`Ви вирішили створити нову заявку на донорську кров, я Вам із цим допоможу.`);
     ctx.wizard.next();
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
-  ctx => {
-    ctx.reply(`Почнемо з найголовнішого: \nкров якої групи Ви потребуєте?`, Markup.keyboard([
+  async ctx => {
+    await ctx.reply(`Почнемо з найголовнішого: \nкров якої групи Ви потребуєте?`, Markup.keyboard([
       ['1', '2'],
       ['3', '4']
     ]).oneTime().resize().extra());
@@ -64,7 +65,7 @@ const createDemand = new WizardScene(
     ctx.wizard.state.bloodType = ctx.message.text;
     log.info(ctx.wizard.state.bloodType);
     ctx.reply(`А резус-фактор?`, Markup.keyboard([      
-      [Markup.button('+'), Markup.button('-')]
+      ['+', '-']
     ]).resize().removeKeyboard().extra());
     return ctx.wizard.next();
   },
@@ -73,7 +74,9 @@ const createDemand = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     } else {
-      ctx.reply('Лише + або - ', Markup.removeKeyboard().extra());
+      ctx.reply('Лише + або - ', Markup.keyboard([      
+        ['+', '-']
+      ]).resize().removeKeyboard().extra());
       ctx.wizard.back();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }
@@ -98,10 +101,7 @@ const createDemand = new WizardScene(
     Markup.keyboard([      
       Markup.button('✅ Все вірно!'),
       Markup.button('❌ Спочатку'),
-    ])
-      .resize()
-      .removeKeyboard()
-      .extra(),
+    ]).resize().removeKeyboard().extra(),
       { parse_mode: 'markdown' }
     );
     return ctx.wizard.next();
@@ -125,10 +125,8 @@ const createDemand = new WizardScene(
       rhesus: ctx.wizard.state.rhesus,
       reason: ctx.wizard.state.reason,
     }
-    log.info('💎');
-    log.info(demand);
 
-    const response = await axios({
+    const { data: donorsList } = await axios({
       method: 'POST',
       url: `http://nodejs:3000/demand?userId=${ctx.wizard.state.currentUser.id}`,
       json: true,
@@ -136,40 +134,29 @@ const createDemand = new WizardScene(
       data: demand,
     });
 
-    log.info(` 🔵 CREATE DEMAND RESPONSE FROM BACK:`);
-    log.info(response.data);
-    log.info('🔴🔴🔴');
+    log.info(donorsList);
+
     await ctx.replyWithHTML(`Заявку створено! 💉\nTисни /main для головного меню.`, Markup.removeKeyboard().extra());
     
-    // Sending message to admin
-    bot.telegram.sendMessage(getAdmin(), `⚠️⚠️⚠️
-    Заявка від: ${ctx.from.first_name} ${ctx.from.last_name}
-    Telegram: ${ctx.from.username}
-    Група крові: ${ctx.wizard.state.bloodType}
-    Резус-фактор: ${ctx.wizard.state.rhesus}
-    Мета: ${ctx.wizard.state.reason}`,
-    );
+    const textOfDemand = `🆕 Нова заявка!
+Група крові: ${demand.bloodType}
+Резус-фактор: ${demand.rhesus}
+Місто: ${demand.locality}
+Мета: ${demand.reason}\n
+Автор: @${ctx.from.username}`;
 
-    if (response.data && response.data.length) {
+    if (donorsList && donorsList.length) {
       try {
-        response.data.forEach(async u => {
-          await bot.telegram.sendMessage(u.telegramId, 
-          `🆕
-          Заявка від: @${ctx.from.username}
-        Група крові: ${ctx.wizard.state.bloodType}
-        Резус-фактор: ${ctx.wizard.state.rhesus}
-        Місто: ${ctx.wizard.state.currentUser.locality}
-        Мета: ${ctx.wizard.state.reason}
-        Телефон: ${ctx.wizard.state.currentUser.phoneNumber}
-          `);
+        donorsList.forEach(u => {
+          if (u.telegramId != ctx.from.id) {
+            await bot.telegram.sendMessage(u.telegramId, textOfDemand);
+          }
         });
       } catch (error) {
         log.error('🔴 MAILING  error -', error);
       }
     
     }
-
-    // Scene exit
     return ctx.scene.leave();
   }
 );

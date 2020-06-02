@@ -1,6 +1,7 @@
 # Customs
 telegramBot/src/config/
 telegramBot/src/middlewares/
+telegramBot/src/helpers/mailingAgent.js
 
 # Logs
 logs

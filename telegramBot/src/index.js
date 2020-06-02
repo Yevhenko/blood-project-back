@@ -27,7 +27,7 @@ bot.use(stage.middleware());
 bot.telegram.getMe().then(bot_informations => {
   log.info(bot_informations);
   bot.options.username = bot_informations.username;
-  log.info(`${bot.options.username}`);
+  log.info(`🤖 ${bot.options.username}`);
 }).catch(e => log.error(e));
 
 // start
@@ -50,12 +50,11 @@ bot.start(async ctx => {
       return;
     };
     ctx.reply(`З поверненням, ${currentUser.fullName}!`, Markup.inlineKeyboard([
-      [Markup.callbackButton('🆕 Створити нову заявку', 'create_demand')],
-      [Markup.callbackButton('📋 Список усіх заявок', 'get_demands_list')],
-      [Markup.callbackButton('⚙️ Налаштування', 'settings'),
-      Markup.urlButton('💉 Про проект', `https://github.com/Yevhenko/blood-project-back`)],
-      [Markup.callbackButton('🤖 Підтримка', 'support')],
-      [Markup.callbackButton('🚪 Вийти', 'leave')]
+      [Markup.callbackButton('🆕 Нова заявка', 'create_demand')],
+      [Markup.callbackButton('📋 Актуальні заявки', 'get_demands_list')],
+      [Markup.urlButton('🖥 WEB версія', `http://blood.pp.ua`)],
+      [Markup.callbackButton('🤖 Підтримка', 'support'),
+      Markup.callbackButton('🚪 Вийти', 'quit')]
     ]).extra())
   } catch (error) {
     log.error('🤖 START function error -', error.message);
@@ -76,7 +75,7 @@ bot.command('main', ctx => {
     [Markup.callbackButton('⚙️ Налаштування', 'settings'),
     Markup.urlButton('💉 Про проект', `https://github.com/Yevhenko/blood-project-back`)],
     [Markup.callbackButton('🤖 Підтримка', 'support'),
-    Markup.callbackButton('🚪 Вийти', 'leave')]
+    Markup.callbackButton('🚪 Вийти', 'quit')]
   ]).extra());
 });
 
@@ -126,7 +125,7 @@ bot.command('support', async ctx => {
   }
 });
 
-bot.command('leave', async ctx => {
+bot.command('quit', async ctx => {
   try {
     await ctx.leaveChat();
   } catch (error) {
@@ -134,9 +133,9 @@ bot.command('leave', async ctx => {
   }
 });
 
-bot.action('leave', async ctx => {
+bot.action('quit', async ctx => {
   try {
-    await ctx.telegram.kickChatMember(ctx.chat.id, +ctx.from.id, new Date().getTime() + 45 * 1000);
+    await ctx.leaveChat();
   } catch (error) {
     log.error(error.message);    
   }

@@ -23,7 +23,6 @@ const log = logger(__filename);
 const newUser = new WizardScene(
   'new_user',
   async ctx => {
-    // experimental
     await ctx.replyWithHTML('Давайте знайомитися! Як Вас звати?\n(<i>лише українською</i> 🇺🇦)\n\n Або натисни кнопку нижче 📱', {
       reply_markup: {
         keyboard: [[{ text: '📲 Використати дані з Telegram', request_contact: true }]],
@@ -37,6 +36,7 @@ const newUser = new WizardScene(
     if (!ctx.message.contact) {
       if (ctx.message.text.length > 1 && fullNameValidator(ctx.message.text)) {
         ctx.wizard.state.name = ctx.message.text;
+        ctx.reply(`Ваш мобільний?`);
         ctx.wizard.next();
         return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
       }
@@ -50,7 +50,22 @@ const newUser = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
     }
-    
+  },
+  ctx => {
+    if (!ctx.wizard.state.phone) {
+      if (validator.isMobilePhone(ctx.message.text, 'uk-UA')) {
+        ctx.wizard.state.phone = ctx.message.text;
+        ctx.wizard.next();
+        return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
+      } else {
+        ctx.reply(`🤦‍♂️ Номер не є дійсним.`);
+        ctx.wizard.back(); 
+        return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
+      }
+    } else {
+      ctx.wizard.next();
+      return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
+    }
   },
   ctx => {
     ctx.reply(`⛳️ Звідки Ви? `);
@@ -63,7 +78,7 @@ const newUser = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
     }
-    ctx.reply(`🤦‍♂️ Нема такого locality.`);
+    ctx.reply(`🤦‍♂️ Нема такого населеного пункта.`);
     ctx.wizard.back(); 
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
@@ -212,22 +227,16 @@ const newUser = new WizardScene(
       Markup.removeKeyboard().extra()
     );
 
-    bot.telegram.sendMessage(
-      getAdmin(),
-      `
-    Ім'я: ${ctx.wizard.state.name}
-    Телефон: ${ctx.wizard.state.phone}
-    Дата народження: ${ctx.wizard.state.dob}
-    Місто(село): ${ctx.wizard.state.locality}
-    Ел.пошта: ${ctx.wizard.state.email}
-    Група крові: ${ctx.wizard.state.bloodType}
-    Резус-фактор: ${ctx.wizard.state.rhesus}`
-    );
+    bot.telegram.sendMessage(getAdmin(), `Ім'я: ${ctx.wizard.state.name}
+Телефон: ${ctx.wizard.state.phone}
+Дата народження: ${ctx.wizard.state.dob}
+Місто(село): ${ctx.wizard.state.locality}
+Ел.пошта: ${ctx.wizard.state.email}
+Група крові: ${ctx.wizard.state.bloodType}
+Резус-фактор: ${ctx.wizard.state.rhesus}`);
 
     return ctx.scene.leave();
   }
 );
 
-module.exports = {
-  newUser,
-};
+module.exports = { newUser };
