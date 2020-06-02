@@ -1,4 +1,6 @@
+const jwt = require('jsonwebtoken');
 const { User } = require('../db/models');
+const config = require('../config');
 const { phoneNumber, rhesus } = require('./commonHandlers');
 
 async function setUser(body) {
@@ -15,7 +17,9 @@ async function setUser(body) {
       telegramId: body.telegramId,
     });
 
-    return user;
+    const token = jwt.sign(user.toJSON(), config.secret);
+
+    return { user, token };
   } catch (error) {
     console.error(error);
     throw error;
