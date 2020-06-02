@@ -14,6 +14,7 @@ services:
       - 3000:3000
     networks:
       - blood_network
+    restart: always
 
   dbmain:
     container_name: db-blood
@@ -28,6 +29,7 @@ services:
       - ./back/src/db/data:/var/lib/postgresql/data
     networks:
       - blood_network
+      restart: always
 
   telegram_bot:
     container_name: telegram-blood
@@ -45,6 +47,7 @@ services:
       - 4000:4000  
     networks:
       - blood_network
+    restart: always
 
 networks:
   blood_network:
