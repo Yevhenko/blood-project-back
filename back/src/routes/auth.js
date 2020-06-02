@@ -17,7 +17,7 @@ auth.all('*', async (req, res, next) => {
     return next();
   }
 
-  if (!req.cookies) {
+  if (!req.cookies || !req.headers) {
     res.status(500).send('auth failed');
   }
 

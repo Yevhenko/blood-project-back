@@ -17,7 +17,7 @@ login.post('/login', async (req, res) => {
     res.cookie('tgUser', token);
     res.header.authorization = token;
 
-    return res.status(200).send(user.toString());
+    return res.status(200).send(user, token);
   } catch (error) {
     console.error(error);
     return res.status(500).send({ errorMessage: error.message || 'Something went wrong' });
