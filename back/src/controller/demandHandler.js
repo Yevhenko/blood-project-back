@@ -17,7 +17,12 @@ async function setDemandAndFilterForSending(body, userId) {
       where: { bloodType: demand.bloodType, rhesus: demand.rhesus },
     });
 
-    return needableUsers;
+    return (
+      needableUsers,
+      demand.map((d) => ({
+        id: d.id,
+      }))
+    );
   } catch (error) {
     console.error(error);
     throw error;

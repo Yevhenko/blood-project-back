@@ -13,11 +13,12 @@ login.post('/login', async (req, res) => {
       return res.status(404).send('Not found');
     }
 
-    const { user, token } = await makeLogin(body);
+    const response = await makeLogin(body);
+    const { token } = response;
     res.cookie('tgUser', token);
     res.header.authorization = token;
 
-    return res.status(200).send(user, token);
+    return res.status(200).send(response);
   } catch (error) {
     console.error(error);
     return res.status(500).send({ errorMessage: error.message || 'Something went wrong' });

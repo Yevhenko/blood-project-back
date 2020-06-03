@@ -5,8 +5,11 @@ const config = require('../config');
 const auth = express.Router();
 
 auth.all('*', async (req, res, next) => {
-  console.log('AUTH:', req.headers);
-  let token = req.headers.authorization;
+  if (!req.headers.authorization) {
+    res.status(500).send('auth failed');
+  }
+
+  const token = req.headers.authorization;
 
   if (token === config.telegramBotSecret) {
     req.context = {
@@ -17,21 +20,12 @@ auth.all('*', async (req, res, next) => {
     return next();
   }
 
-  if (!req.cookies || !req.headers) {
-    res.status(500).send('auth failed');
-  }
-
-  token = req.cookies.tgUser || req.headers.authorization;
-
-  if (token) {
-    try {
-      req.context = {
-        user: jwt.verify(token, config.secret),
-      };
-    } catch (error) {
-      console.log('error in auth user -', error);
-      res.cookie('tgUser', '');
-    }
+  try {
+    req.context = {
+      user: jwt.verify(token, config.secret),
+    };
+  } catch (error) {
+    console.log('error in auth user -', error);
   }
 
   if (!req.context || !req.context.user) {
