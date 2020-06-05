@@ -1,108 +1,97 @@
-require('dotenv').config();
-
-const { getSecretKey, getAdmin } = require('./config');
-const { Stage } = require('telegraf');
+const { Telegraf } = require('telegraf');
+const { Stage, Markup } = require('telegraf');
 const session = require('telegraf/session');
-const bot = require('./bot');
-// const telegram = require('telegraf/telegram');
-const { settings } = require('./scenes/settings');
 const axios = require('axios');
+const bot = require('./bot');
+const { getSecretKey, getAdmin } = require('./config');
 
 const { logger } = require('./logger');
+
 const log = logger(__filename);
 
 const { newUser } = require('./scenes/newUser');
 const { createDemand } = require('./scenes/createDemand');
 const { getDemandsList } = require('./scenes/getDemandsList');
-const Markup = require('telegraf/markup');
+const { settings } = require('./scenes/settings');
+
+const messages = require('./helpers/messages');
+const keyboards = require('./helpers/keyboards');
 
 const stage = new Stage([newUser, createDemand, getDemandsList, settings]);
 
-// bot.use(Telegraf.log());
-
+bot.use(Telegraf.log());
 bot.use(session());
+
 bot.use(stage.middleware());
 
-// unknown magic
-bot.telegram.getMe().then(bot_informations => {
-  log.info(bot_informations);
-  bot.options.username = bot_informations.username;
-  log.info(`${bot.options.username}`);
-}).catch(e => log.error(e));
+bot.telegram
+  .getMe()
+  .then(bot_informations => {
+    log.info(bot_informations.username);
+  })
+  .catch(e => log.error(e));
 
 // start
 bot.start(async ctx => {
   try {
-    log.info(':)');
-    const { data: currentUser } = await axios({
-      method: "GET",
-      url: `http://nodejs:3000/user?telegramId=${ctx.from.id}`,
-      headers: {
-        'Authorization': getSecretKey(),
-      },
-    });  
-
-    log.info('🤘 START RESPONSE FROM BACK');
-    log.info(currentUser);
-
-    if (!currentUser){
-      ctx.reply(`Вітаю Вас ! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
-      return;
-    };
-    ctx.reply(`З поверненням, ${currentUser.fullName}!`, Markup.inlineKeyboard([
-      [Markup.callbackButton('🆕 Створити нову заявку', 'create_demand')],
-      [Markup.callbackButton('📋 Список усіх заявок', 'get_demands_list')],
-      [Markup.callbackButton('⚙️ Налаштування', 'settings'),
-      Markup.urlButton('💉 Про проект', `https://github.com/Yevhenko/blood-project-back`)],
-      [Markup.callbackButton('🤖 Підтримка', 'support')],
-      [Markup.callbackButton('🚪 Вийти', 'leave')]
-    ]).extra())
+    await ctx.reply('Accepted!', keyboards.mainMenuButton);
   } catch (error) {
-    log.error('🤖 START function error -', error.message);
+    log.error(`🤖 START ->>  ${error.message}`);
   }
 });
 
+bot.action('apply', async ctx => {
+  try {
+    const { data: currentUser } = await axios({
+      method: 'POST',
+      url: `http://nodejs:3000/connection?telegramId=${ctx.from.id}`,
+      headers: { Authorization: getSecretKey() },
+    });
+    log.info('🤘 START RESPONSE FROM BACK');
+
+    if (!currentUser) {
+      ctx.reply(messages.newUser, ctx.scene.enter('new_user'));
+      return;
+    }
+    await ctx.reply('🤖', keyboards.applyButton);
+
+    // ctx.reply(`З поверненням, ${currentUser.fullName}!`, keyboards.mainMenu)
+  } catch (error) {
+    log.error(`🤖 START ->>  ${error.message}`);
+  }});
+
 bot.help(async ctx => {
-  await ctx.replyWithMarkdown(
-    `Шановні! В будь-якій незрозумілій ситуації *ЗУПИНЯЙТЕ* бота та *ЗАПУСКАЙТЕ* його знову! 
-І, до речі, якщо помітили баг, то хутчіш пишіть сюди @aendrevv, або використовуйте команду /support, чи тисніть на 🤖 *Підтримка* у головному меню /main 😎`
-  );
+  await ctx.reply(messages.help, keyboards.applyButton);
 });
 
 bot.command('main', ctx => {
-  ctx.replyWithMarkdown(`*Головне меню*`, Markup.inlineKeyboard([
-    [Markup.callbackButton('🆕 Створити нову заявку', 'create_demand')],
-    [Markup.callbackButton('📋 Список усіх заявок', 'get_demands_list')],
-    [Markup.callbackButton('⚙️ Налаштування', 'settings'),
-    Markup.urlButton('💉 Про проект', `https://github.com/Yevhenko/blood-project-back`)],
-    [Markup.callbackButton('🤖 Підтримка', 'support'),
-    Markup.callbackButton('🚪 Вийти', 'leave')]
-  ]).extra());
+  ctx.replyWithMarkdown(`*Головне меню*`, keyboards.mainMenu);
+});
+
+bot.action('main', ctx => {
+  ctx.editMessageCaption() (`Головне меню`, keyboards.mainMenu);
 });
 
 bot.action('create_demand', async (ctx, next) => {
   try {
-    await ctx.answerCbQuery();
     await ctx.scene.enter('create_demand');
     return next();
   } catch (error) {
-    log.info(error.message);    
+    log.info(error.message);
   }
 });
 
 bot.action('settings', async (ctx, next) => {
   try {
-    await ctx.answerCbQuery();
     await ctx.scene.enter('settings');
     return next();
   } catch (error) {
-    log.info(error.message);    
+    log.info(error.message);
   }
 });
 
 bot.action('get_demands_list', async (ctx, next) => {
   try {
-    await ctx.answerCbQuery();
     await ctx.scene.enter('get_demands_list');
     return next();
   } catch (error) {
@@ -112,33 +101,17 @@ bot.action('get_demands_list', async (ctx, next) => {
 
 bot.action('support', async ctx => {
   try {
-    await ctx.reply('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
+    await ctx.reply(messages.support, keyboards.mainMenuButton);
   } catch (error) {
-    log.error(error.message);    
+    log.error(error.message);
   }
 });
 
 bot.command('support', async ctx => {
   try {
-    await ctx.reply('Напишіть, будь-ласка, максимально стисло та інформативно Ваше запитання і ми відповімо Вам так швидко, як тільки зможемо 🤗');
+    await ctx.reply(messages.support, keyboards.mainMenuButton);
   } catch (error) {
-    log.error(error.message);    
-  }
-});
-
-bot.command('leave', async ctx => {
-  try {
-    await ctx.leaveChat();
-  } catch (error) {
-    log.error(error.message);    
-  }
-});
-
-bot.action('leave', async ctx => {
-  try {
-    await ctx.telegram.kickChatMember(ctx.chat.id, +ctx.from.id, new Date().getTime() + 45 * 1000);
-  } catch (error) {
-    log.error(error.message);    
+    log.error(error.message);
   }
 });
 
@@ -146,7 +119,7 @@ bot.on('message', async ctx => {
   try {
     await ctx.forwardMessage(getAdmin());
   } catch (error) {
-    log.error(error.message);    
+    log.error(error.message);
   }
 });
 
