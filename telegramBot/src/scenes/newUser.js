@@ -1,46 +1,33 @@
 require('dotenv').config();
 const { getAdmin, getSecretKey } = require('../config');
+const messages = require('../helpers/messages');
+const keyboards = require('../helpers/keyboards');
+
 const { ageCheck } = require('../helpers/ageChecker');
 
 const Markup = require('telegraf/markup');
 const WizardScene = require('telegraf/scenes/wizard');
 const validator = require('validator');
 const axios = require('axios');
-
 const bot = require('../bot');
 const { fullNameValidator } = require('../helpers/fullNameValidator');
-
 const { logger } = require('../logger');
 const log = logger(__filename);
 
-// const { setUser } = require('../../../back/src/controller/userHandler');
-// const { User } = require('../../../back/src/db/models/');
-
-
-// const Telegraf = require('telegraf');
-
-// new user registrator five-step wizard
 const newUser = new WizardScene(
   'new_user',
   async ctx => {
-    // experimental
-    await ctx.replyWithHTML('Давайте знайомитися! Як Вас звати?\n(<i>лише українською</i> 🇺🇦)\n\n Або натисни кнопку нижче 📱', {
-      reply_markup: {
-        keyboard: [[{ text: '📲 Використати дані з Telegram', request_contact: true }]],
-        resize_keyboard: true,
-        one_time_keyboard: true,
-      },
-    });
+    await ctx.replyWithHTML(messages.hello, keyboards.shareContact);
     return ctx.wizard.next();
   },
   ctx => {
     if (!ctx.message.contact) {
-      if (ctx.message.text.length > 1 && fullNameValidator(ctx.message.text)) {
+      if (fullNameValidator(ctx.message.text)) {
         ctx.wizard.state.name = ctx.message.text;
         ctx.wizard.next();
         return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
       }
-      ctx.reply(`🤦‍♂️ Нема такого ім'я.`);
+      ctx.reply(messages.noName);
       ctx.wizard.back(); 
       return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
     } else {
@@ -63,7 +50,7 @@ const newUser = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
     }
-    ctx.reply(`🤦‍♂️ Нема такого locality.`);
+    ctx.reply(messages.now);
     ctx.wizard.back(); 
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
@@ -83,7 +70,7 @@ const newUser = new WizardScene(
     return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
   },
   ctx => {
-    ctx.reply(`🔞 Введіть, будь-ласка, дату Вашого народження:\n(у форматі: YYYY.MM.DD)`);
+    ctx.reply(messages.enterDOB);
     return ctx.wizard.next();
   },
   ctx => {
@@ -157,14 +144,13 @@ const newUser = new WizardScene(
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   ctx => {
-    ctx.reply(
-      `Перевірте Ваші дані:
-    Ім'я: ${ctx.wizard.state.name}
-    Телефон: ${ctx.wizard.state.phone}
-    Дата народження: ${ctx.wizard.state.dob}    
-    Місто(село): ${ctx.wizard.state.locality}
-    Ел.пошта: ${ctx.wizard.state.email}
-    Група крові: ${ctx.wizard.state.bloodType}
+    ctx.reply(`Перевірте Ваші дані:
+  Ім'я: ${ctx.wizard.state.name}
+  Телефон: ${ctx.wizard.state.phone}
+  Дата народження: ${ctx.wizard.state.dob}    
+  Місто(село): ${ctx.wizard.state.locality}
+  Ел.пошта: ${ctx.wizard.state.email}
+  Група крові: ${ctx.wizard.state.bloodType}
     Резус-фактор: ${ctx.wizard.state.rhesus}`,
       Markup.keyboard([Markup.button('✅ Все вірно!'), Markup.button('❌ Спочатку')])
         .resize()
@@ -198,9 +184,7 @@ const newUser = new WizardScene(
       method: 'POST',
       url: 'http://nodejs:3000/registration',
       json: true,
-      headers: {
-        'Authorization': getSecretKey(),
-      },
+      headers: { 'Authorization': getSecretKey() },
       data: user,
     });
 
@@ -212,22 +196,18 @@ const newUser = new WizardScene(
       Markup.removeKeyboard().extra()
     );
 
-    bot.telegram.sendMessage(
-      getAdmin(),
-      `
-    Ім'я: ${ctx.wizard.state.name}
-    Телефон: ${ctx.wizard.state.phone}
-    Дата народження: ${ctx.wizard.state.dob}
-    Місто(село): ${ctx.wizard.state.locality}
-    Ел.пошта: ${ctx.wizard.state.email}
-    Група крові: ${ctx.wizard.state.bloodType}
-    Резус-фактор: ${ctx.wizard.state.rhesus}`
+    bot.telegram.sendMessage(getAdmin(), `
+Ім'я: ${ctx.wizard.state.name}
+Телефон: ${ctx.wizard.state.phone}
+Дата народження: ${ctx.wizard.state.dob}
+Місто(село): ${ctx.wizard.state.locality}
+Ел.пошта: ${ctx.wizard.state.email}
+Група крові: ${ctx.wizard.state.bloodType}
+Резус-фактор: ${ctx.wizard.state.rhesus}`
     );
 
     return ctx.scene.leave();
   }
 );
 
-module.exports = {
-  newUser,
-};
+module.exports = { newUser };

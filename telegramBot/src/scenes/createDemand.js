@@ -1,33 +1,33 @@
-require('dotenv').config();
 const Markup = require('telegraf/markup');
 const WizardScene = require('telegraf/scenes/wizard');
 const bot = require('../bot');
 const axios = require('axios');
-// const Telegraf = require('telegraf');
 
 const { getAdmin, getSecretKey } = require('../config');
 
 const { logger } = require('../logger');
 const log = logger(__filename);
 
-// new user registrator five-step wizard
+const messages = require('../helpers/messages');
+const keyboards = require('../helpers/keyboards');
+const { messageWithDemand } = require('../helpers/messageWithDemand');
+
+const demand = {};
+
 const createDemand = new WizardScene(
   'create_demand',
-  
   async ctx => {
     try {
       const { data: currentUser } = await axios({
         method: "GET",
         url: `http://nodejs:3000/user?telegramId=${ctx.from.id}`,
-        headers: {
-          'Authorization': getSecretKey(),
-        }
+        headers: { 'Authorization': getSecretKey() }
       });  
       log.info(`🔶 RESPONSE FROM BACK >>>:`);
       log.info(currentUser);
   
       if (!currentUser){
-        ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
+        ctx.reply(messages.newUser, ctx.scene.enter('new_user'));
         return;
       };
 
@@ -39,16 +39,13 @@ const createDemand = new WizardScene(
     }
   },
 
-  ctx => {
-    ctx.reply(`Ви вирішили створити нову заявку на донорську кров, я Вам із цим допоможу.`);
+  async ctx => {
+    await ctx.reply(messages.demandWelcome);
     ctx.wizard.next();
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   ctx => {
-    ctx.reply(`Почнемо з найголовнішого: \nкров якої групи Ви потребуєте?`, Markup.keyboard([
-      ['1', '2'],
-      ['3', '4']
-    ]).oneTime().resize().extra());
+    ctx.reply(messages.demandBloodType, keyboards.bloodTypes);
     return ctx.wizard.next();
   },
   ctx => {
@@ -63,9 +60,7 @@ const createDemand = new WizardScene(
   ctx => {
     ctx.wizard.state.bloodType = ctx.message.text;
     log.info(ctx.wizard.state.bloodType);
-    ctx.reply(`А резус-фактор?`, Markup.keyboard([      
-      [Markup.button('+'), Markup.button('-')]
-    ]).resize().removeKeyboard().extra());
+    ctx.reply(messages.rhesusQuestion, keyboards.rhesuses);
     return ctx.wizard.next();
   },
   ctx => {
@@ -73,7 +68,7 @@ const createDemand = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     } else {
-      ctx.reply('Лише + або - ', Markup.removeKeyboard().extra());
+      ctx.reply(messages.rhesusQuestion, keyboards.rhesuses);
       ctx.wizard.back();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     }
@@ -81,7 +76,7 @@ const createDemand = new WizardScene(
   ctx => {  
     ctx.wizard.state.rhesus = ctx.message.text;
     log.info(ctx.wizard.state.rhesus);
-    ctx.reply('Розкажіть, будь-ласка, для чого Вам потрібна донорська кров, а також додаткову інформацію:', Markup.removeKeyboard().extra());
+    ctx.reply(messages.reason, keyboards.remove);
     return ctx.wizard.next();
     // return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
@@ -89,21 +84,10 @@ const createDemand = new WizardScene(
     ctx.wizard.state.reason = ctx.message.text;
     log.info(ctx.wizard.state.reason);
 
-    ctx.replyWithMarkdown(
-      `*Перевірте Ваші дані*:
-
-    Група крові: ${ctx.wizard.state.bloodType}
-    Резус-фактор: ${ctx.wizard.state.rhesus}
-    Мета: ${ctx.wizard.state.reason}`,
-    Markup.keyboard([      
-      Markup.button('✅ Все вірно!'),
-      Markup.button('❌ Спочатку'),
-    ])
-      .resize()
-      .removeKeyboard()
-      .extra(),
-      { parse_mode: 'markdown' }
-    );
+    ctx.replyWithMarkdown(`*Перевірте Ваші дані*:\n
+Група крові: ${ctx.wizard.state.bloodType}
+Резус-фактор: ${ctx.wizard.state.rhesus}
+Мета: ${ctx.wizard.state.reason}`, keyboards.check);
     return ctx.wizard.next();
     // return ctx.wizard.steps[ctx.wizard.cursor](ctx);
 
@@ -124,50 +108,35 @@ const createDemand = new WizardScene(
       bloodType: ctx.wizard.state.bloodType,
       rhesus: ctx.wizard.state.rhesus,
       reason: ctx.wizard.state.reason,
-    }
-    log.info('💎');
-    log.info(demand);
+    };
 
-    const response = await axios({
+    const { data: suitableDonors } = await axios({
       method: 'POST',
       url: `http://nodejs:3000/demand?userId=${ctx.wizard.state.currentUser.id}`,
       json: true,
       headers: { 'Authorization': getSecretKey() },
       data: demand,
     });
-
-    log.info(` 🔵 CREATE DEMAND RESPONSE FROM BACK:`);
-    log.info(response.data);
-    log.info('🔴🔴🔴');
-    await ctx.replyWithHTML(`Заявку створено! 💉\nTисни /main для головного меню.`, Markup.removeKeyboard().extra());
     
     // Sending message to admin
-    bot.telegram.sendMessage(getAdmin(), `⚠️⚠️⚠️
-    Заявка від: ${ctx.from.first_name} ${ctx.from.last_name}
-    Telegram: ${ctx.from.username}
-    Група крові: ${ctx.wizard.state.bloodType}
-    Резус-фактор: ${ctx.wizard.state.rhesus}
-    Мета: ${ctx.wizard.state.reason}`,
-    );
+    bot.telegram.sendMessage(getAdmin(), `⚠\nTelegram ID: ${ctx.from.id}\nTelegram: @${ctx.from.username}`);
 
-    if (response.data && response.data.length) {
+    // Sending message to demand-suitable donors
+    if (suitableDonors && suitableDonors.length) {
       try {
-        response.data.forEach(async u => {
-          await bot.telegram.sendMessage(u.telegramId, 
-          `🆕
-          Заявка від: @${ctx.from.username}
-        Група крові: ${ctx.wizard.state.bloodType}
-        Резус-фактор: ${ctx.wizard.state.rhesus}
-        Місто: ${ctx.wizard.state.currentUser.locality}
-        Мета: ${ctx.wizard.state.reason}
-        Телефон: ${ctx.wizard.state.currentUser.phoneNumber}
-          `);
+        suitableDonors.forEach(async u => {
+          if (+u.telegramId !== +ctx.from.id) {
+            await bot.telegram.sendMessage(u.telegramId, `${messageWithDemand(demand)}\n\n@${ctx.from.username}`, keyboards.applyButtonTest);
+          }
+          
         });
       } catch (error) {
         log.error('🔴 MAILING  error -', error);
       }
     
-    }
+    } else ctx.reply(messages.emptyDonorsList);
+
+    await ctx.replyWithHTML(messages.demandCongrats, keyboards.mainMenuButton);
 
     // Scene exit
     return ctx.scene.leave();
