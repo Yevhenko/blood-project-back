@@ -1,11 +1,13 @@
 const { Connection } = require('../db/models');
 
-async function setConnection(body, userId) {
+async function setConnection(body) {
   try {
-    return await Connection.create({
-      userId,
+    const connection = await Connection.create({
+      userId: body.demandId,
       demandId: body.demandId,
     });
+
+    return connection;
   } catch (error) {
     console.error(error);
     throw error;

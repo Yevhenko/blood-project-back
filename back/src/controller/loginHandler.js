@@ -43,8 +43,13 @@ async function makeLogin(body) {
     }
 
     const token = jwt.sign(user.toJSON(), config.secret);
+    const userObj = {
+      id: user.id,
+      bloodType: user.bloodType,
+      rhesus: user.rhesus ? '+' : '-',
+    };
 
-    return { user: authData, token };
+    return { user: userObj, token };
   } catch (error) {
     console.error(error);
     throw error;
