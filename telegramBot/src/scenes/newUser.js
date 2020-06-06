@@ -190,11 +190,7 @@ const newUser = new WizardScene(
 
     log.info(`NEW USER RESPONSE FROM BACK: ${response.data}`);
     
-
-    await ctx.replyWithHTML(
-      `🎉 Вітаємо, ${ctx.wizard.state.name}! 🎉 \nВи стали учасником проекту! 💉\nTисни /main для головного меню.`,
-      Markup.removeKeyboard().extra()
-    );
+    await ctx.reply(messages.congrats, keyboards.mainMenuButton);
 
     bot.telegram.sendMessage(getAdmin(), `
 Ім'я: ${ctx.wizard.state.name}

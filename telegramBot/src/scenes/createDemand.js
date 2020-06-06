@@ -134,9 +134,11 @@ const createDemand = new WizardScene(
         log.error('🔴 MAILING  error -', error);
       }
     
-    } else ctx.reply(messages.emptyDonorsList);
+    } else {
+      ctx.reply(messages.emptyDonorsList);
+    }
 
-    await ctx.replyWithHTML(messages.demandCongrats, keyboards.mainMenuButton);
+    await ctx.reply(messages.demandCongrats, keyboards.mainMenuButton);
 
     // Scene exit
     return ctx.scene.leave();

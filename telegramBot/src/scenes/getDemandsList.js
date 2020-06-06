@@ -29,7 +29,7 @@ const getDemandsList = new WizardScene(
       log.info(currentUser);
   
       if (!currentUser) {
-        ctx.reply(`Вітаю Вас! Ви тут вперше, тому пройдіть реєстрацію, будь-ласка, після чого Вам буде доступним увесь функціонал.`, ctx.scene.enter('new_user'));
+        ctx.reply(messages.newUser, ctx.scene.enter('new_user'));
         return;
       }
 
@@ -51,14 +51,13 @@ const getDemandsList = new WizardScene(
         }
       });
   
-      log.info(`⭐️ GET DEMANDS LIST: ${demandsList}`);
-
       if (demandsList) {
+        ctx.replyWithChatAction('typing');
         demandsList.forEach(async dem => {
           dem.rhesus = dem.rhesus ? '+' : '-';
-          ctx.replyWithChatAction('typing');
-          ctx.replyWithMarkdown(messageWithDemand(dem), keyboards.applyButton);
+          await ctx.replyWithMarkdown(messageWithDemand(dem), keyboards.applyButton);
         });
+        ctx.reply('Натисни для виходу в головне меню', keyboards.mainMenuButton);
       } else ctx.reply(messages.emptyDemandsList, keyboards.mainMenuButton);
     } catch (error) {
       log.error(`🤖 GET DEMANDS LIST error -> ${error.message}`);
