@@ -34,7 +34,7 @@ bot.telegram
 // start
 bot.start(async ctx => {
   try {
-    await ctx.reply('Accepted!', keyboards.mainMenuButton);
+    await ctx.reply('👋', keyboards.mainMenu);
   } catch (error) {
     log.error(`🤖 START ->>  ${error.message}`);
   }
@@ -42,26 +42,22 @@ bot.start(async ctx => {
 
 bot.action('apply', async ctx => {
   try {
-    const { data: currentUser } = await axios({
-      method: 'POST',
-      url: `http://nodejs:3000/connection?telegramId=${ctx.from.id}`,
-      headers: { Authorization: getSecretKey() },
-    });
-    log.info('🤘 START RESPONSE FROM BACK');
-
-    if (!currentUser) {
-      ctx.reply(messages.newUser, ctx.scene.enter('new_user'));
-      return;
-    }
-    await ctx.reply('🤖', keyboards.applyButton);
-
-    // ctx.reply(`З поверненням, ${currentUser.fullName}!`, keyboards.mainMenu)
+    ctx.editMessageReplyMarkup(ctx.callbackQuery.message.chat.id, ctx.callbackQuery.message.message_id, {reply_markup: keyboards.disapplyButton});
   } catch (error) {
-    log.error(`🤖 START ->>  ${error.message}`);
-  }});
+    log.error(`🤖 apply  ${error.message}`);
+  }
+});
+
+bot.action('disapply', async ctx => {
+  try {
+    ctx.editMessageReplyMarkup(ctx.callbackQuery.message.chat.id, ctx.callbackQuery.message.message_id, keyboards.applyButton);
+  } catch (error) {
+    log.error(`🤖 disapply  ${error.message}`);
+  }
+});
 
 bot.help(async ctx => {
-  await ctx.reply(messages.help, keyboards.applyButton);
+  await ctx.reply(messages.help, keyboards.mainMenuButton);
 });
 
 bot.command('main', ctx => {
@@ -69,7 +65,7 @@ bot.command('main', ctx => {
 });
 
 bot.action('main', ctx => {
-  ctx.editMessageCaption() (`Головне меню`, keyboards.mainMenu);
+  ctx.reply(`Головне меню`, keyboards.mainMenu);
 });
 
 bot.action('create_demand', async (ctx, next) => {
