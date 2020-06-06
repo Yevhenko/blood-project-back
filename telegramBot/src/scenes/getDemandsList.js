@@ -3,7 +3,9 @@ const WizardScene = require('telegraf/scenes/wizard');
 const bot = require('../bot');
 const axios = require('axios');
 
-// const Telegraf = require('telegraf');
+const messages = require('../helpers/messages');
+const keyboards = require('../helpers/keyboards');
+const { messageWithDemand } = require('../helpers/messageWithDemand');
 
 const { getSecretKey } = require('../config');
 
@@ -35,7 +37,7 @@ const getDemandsList = new WizardScene(
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx);
     } catch (error) {
-      log.error('🔴 getDemandsList function ERRROR -', error);
+      log.error('🔴 getDemandsList', error);
     }
   },
 
@@ -49,19 +51,18 @@ const getDemandsList = new WizardScene(
         }
       });
   
-      log.info(`⭐️ GET DEMANDS LIST:`);
-      log.info(demandsList);
+      log.info(`⭐️ GET DEMANDS LIST: ${demandsList}`);
 
       if (demandsList) {
-        demandsList.forEach(async d => {
-          const rhesus = d.rhesus ? '+' : '-';
-          await ctx.replyWithMarkdown(`*Заявка від:* ${d.name}\n*Група крові:* ${d.bloodType}\n*Резус-фактор:* ${rhesus}\n*Мета:* ${d.reason}\n*Телефон*${d.phoneNumber}`);
+        demandsList.forEach(async dem => {
+          dem.rhesus = dem.rhesus ? '+' : '-';
+          ctx.replyWithChatAction('typing');
+          ctx.replyWithMarkdown(messageWithDemand(dem), keyboards.applyButton);
         });
-      }
+      } else ctx.reply(messages.emptyDemandsList, keyboards.mainMenuButton);
     } catch (error) {
       log.error(`🤖 GET DEMANDS LIST error -> ${error.message}`);
     }
-    // Scene exit
     return ctx.scene.leave();
   }
 );

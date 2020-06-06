@@ -6,34 +6,33 @@ let telegramConfig = {
 }
 
 const initConfig = options => {
-  telegramConfig ={
+  telegramConfig = {
     botToken: options.BOT_TOKEN,
     admin: options.ADMIN,
     port: options.PORT,
     secretKey: options.SECRET_KEY,
   };
-  console.log('CONFIG:', telegramConfig);
 };
 
-const getBotToken = () =>{
+const getBotToken = () => {
   if (!telegramConfig.botToken) throw 'botToken not found';
 
   return telegramConfig.botToken;
 }
 
-const getAdmin = () =>{
+const getAdmin = () => {
   if (!telegramConfig.admin) throw 'admin not found';
 
   return telegramConfig.admin;
 }
 
-const getPort = () =>{
+const getPort = () => {
   if (!telegramConfig.port) throw 'port not found';
 
   return telegramConfig.port;
 }
 
-const getSecretKey = () =>{
+const getSecretKey = () => {
   if (!telegramConfig.secretKey) throw 'secretKey not found';
 
   return telegramConfig.secretKey;
