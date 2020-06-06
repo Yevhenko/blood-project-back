@@ -3,8 +3,7 @@ const { phoneNumber, rhesus } = require('./commonHandlers');
 
 async function setDemandAndFilterForSending(body, userId) {
   try {
-    const [demand, user] = await Promise.all([
-      Demand.create({
+    const demand = await Demand.create({
         fullName: body.fullName,
         phoneNumber: await phoneNumber(body),
         bloodType: body.bloodType,
@@ -12,9 +11,7 @@ async function setDemandAndFilterForSending(body, userId) {
         locality: body.locality,
         reason: body.reason,
         userId,
-      }),
-      User.findOne(userId),
-    ]);
+      });
 
     const needableUsers = await User.findAll({
       where: { bloodType: demand.bloodType, rhesus: demand.rhesus },
@@ -23,7 +20,6 @@ async function setDemandAndFilterForSending(body, userId) {
     return {
       needableUsers,
       userId,
-      telegramId: user.telegramId,
     };
   } catch (error) {
     console.error(error);

@@ -43,7 +43,7 @@ const getDemandsList = new WizardScene(
 
   async ctx => {
     try {
-      const { data: demandsList } = await axios({
+      const { data: { needableUsers: demandsList } } = await axios({
         method: 'GET',
         url: `http://nodejs:3000/demand?userId=${ctx.wizard.state.currentUser.id}&bloodType=${ctx.wizard.state.currentUser.bloodType}&rhesus=${ctx.wizard.state.currentUser.rhesus}`,
         headers: {
