@@ -1,5 +1,6 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable no-unused-vars */
+
 module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface.createTable('Connections', {
@@ -11,21 +12,9 @@ module.exports = {
       },
       demandId: {
         type: Sequelize.INTEGER,
-        onDelete: 'CASCADE',
-        allowNull: true,
-        references: {
-          model: 'Demands',
-          key: 'id',
-        },
       },
       userId: {
         type: Sequelize.INTEGER,
-        onDelete: 'CASCADE',
-        allowNull: true,
-        references: {
-          model: 'Users',
-          key: 'id',
-        },
       },
       createdAt: {
         allowNull: false,
