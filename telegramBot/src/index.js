@@ -42,7 +42,8 @@ bot.start(async ctx => {
 
 bot.action('apply', async ctx => {
   try {
-    ctx.editMessageReplyMarkup(ctx.callbackQuery.message.chat.id, ctx.callbackQuery.message.message_id, {reply_markup: keyboards.disapplyButton});
+    await ctx.answerCbQuery(messages.onApply);
+    await ctx.editMessageReplyMarkup(keyboards.onApplyKeyboard);
   } catch (error) {
     log.error(`🤖 apply  ${error.message}`);
   }
@@ -50,7 +51,9 @@ bot.action('apply', async ctx => {
 
 bot.action('disapply', async ctx => {
   try {
-    ctx.editMessageReplyMarkup(ctx.callbackQuery.message.chat.id, ctx.callbackQuery.message.message_id, keyboards.applyButton);
+    await ctx.answerCbQuery(messages.onDisapply);
+    await ctx.editMessageReplyMarkup(keyboards.onDisapplyKeyboard);
+
   } catch (error) {
     log.error(`🤖 disapply  ${error.message}`);
   }

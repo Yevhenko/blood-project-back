@@ -110,7 +110,7 @@ const createDemand = new WizardScene(
       reason: ctx.wizard.state.reason,
     };
 
-    const { data: suitableDonors } = await axios({
+    const { data: { needableUsers: suitableDonors } } = await axios({
       method: 'POST',
       url: `http://nodejs:3000/demand?userId=${ctx.wizard.state.currentUser.id}`,
       json: true,

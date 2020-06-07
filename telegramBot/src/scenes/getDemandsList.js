@@ -43,19 +43,17 @@ const getDemandsList = new WizardScene(
 
   async ctx => {
     try {
-      const { data: { needableUsers: demandsList } } = await axios({
+      const { data: demandsList } = await axios({
         method: 'GET',
         url: `http://nodejs:3000/demand?userId=${ctx.wizard.state.currentUser.id}&bloodType=${ctx.wizard.state.currentUser.bloodType}&rhesus=${ctx.wizard.state.currentUser.rhesus}`,
-        headers: {
-          'Authorization': getSecretKey(),
-        }
+        headers: { 'Authorization': getSecretKey() }
       });
   
       if (demandsList) {
         ctx.replyWithChatAction('typing');
         demandsList.forEach(async dem => {
           dem.rhesus = dem.rhesus ? '+' : '-';
-          await ctx.replyWithMarkdown(messageWithDemand(dem), keyboards.applyButton);
+          await ctx.replyWithMarkdown(messageWithDemand(dem), keyboards.applyButtonInline);
         });
         ctx.reply('Натисни для виходу в головне меню', keyboards.mainMenuButton);
       } else ctx.reply(messages.emptyDemandsList, keyboards.mainMenuButton);

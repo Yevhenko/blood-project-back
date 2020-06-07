@@ -24,8 +24,8 @@ const newUser = new WizardScene(
     if (!ctx.message.contact) {
       if (fullNameValidator(ctx.message.text)) {
         ctx.wizard.state.name = ctx.message.text;
-        ctx.wizard.next();
-        return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
+        ctx.reply(messages.enterPhone);
+        return ctx.wizard.next();
       }
       ctx.reply(messages.noName);
       ctx.wizard.back(); 
@@ -33,11 +33,17 @@ const newUser = new WizardScene(
     } else {
       ctx.wizard.state.name = `${ctx.message.contact.first_name} ${ctx.message.contact.last_name}`;
       ctx.wizard.state.phone = ctx.message.contact.phone_number;
-      log.info(`ID: ${ctx.message.from.id} USERNAME: ${ctx.message.from.username}`, ctx.message.contact);
+      log.info(`ID: ${ctx.message.from.id} USERNAME: ${ctx.message.from.username}`);
       ctx.wizard.next();
       return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
+    }  
+  },
+  ctx => {
+    if (!ctx.wizard.state.phone) {
+      ctx.wizard.state.phone = ctx.message.text;
     }
-    
+    ctx.wizard.next();
+    return ctx.wizard.steps[ctx.wizard.cursor](ctx); 
   },
   ctx => {
     ctx.reply(`⛳️ Звідки Ви? `);
