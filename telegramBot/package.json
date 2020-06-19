@@ -1,0 +1,43 @@
+{
+  "name": "blood-project-telegram",
+  "version": "1.0.0",
+  "description": "T",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yevhenko/blood-project-back.git"
+  },
+  "author": "Yevhenko, Aendrevv",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yevhenko/blood-project-back/issues"
+  },
+  "homepage": "https://github.com/Yevhenko/blood-project-back#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "pg": "^7.18.2",
+    "sequelize": "^5.21.5",
+    "sequelize-cli": "^5.5.1",
+    "telegraf": "^3.38.0",
+    "telegraf-session-local": "^1.0.2",
+    "validator": "^13.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-import": "^0.13.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "nodemon": "^2.0.4",
+    "pino": "^6.3.1",
+    "pino-pretty": "^4.0.0",
+    "prettier": "^1.19.1"
+  }
+}
