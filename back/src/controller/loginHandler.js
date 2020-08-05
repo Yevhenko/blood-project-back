@@ -42,7 +42,7 @@ async function makeLogin(body) {
       return { user: authData.id };
     }
 
-    const token = jwt.sign(user.toJSON(), config.secret);
+    const token = jwt.sign(user.toJSON(), config.secret, { expiresIn: 300 });
     const userObj = {
       id: user.id,
       bloodType: user.bloodType,
